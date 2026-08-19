@@ -3,6 +3,7 @@ import { LandingPage } from './pages/LandingPage';
 import { Dashboard } from './pages/Dashboard';
 import { Wizard } from './pages/Wizard';
 import { ResultPage } from './pages/ResultPage';
+import { DeputyDashboard } from './pages/DeputyDashboard';
 import { planStorage } from './utils/planStorage';
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
   const [planHistory, setPlanHistory] = useState([]);
   const [aiProvider, setAiProvider] = useState('gemini');
   const [currentPlanId, setCurrentPlanId] = useState(null);
+  
+  const [appMode, setAppMode] = useState('teacher'); // 'teacher' | 'deputy'
 
   const handleAdapt = (newScenario, newActivities, newParams) => {
     // Save current to history
@@ -71,11 +74,16 @@ function App() {
         <LandingPage onStart={() => setCurrentRoute('dashboard')} />
       )}
       
-      {currentRoute === 'dashboard' && (
+      {currentRoute === 'dashboard' && appMode === 'teacher' && (
         <Dashboard 
           onNewPlan={handleNewPlan}
           onOpenPlan={handleOpenPlan}
+          onSwitchRole={(role) => setAppMode(role)}
         />
+      )}
+
+      {currentRoute === 'dashboard' && appMode === 'deputy' && (
+        <DeputyDashboard onSwitchRole={(role) => setAppMode(role)} />
       )}
       
       {currentRoute === 'wizard' && (

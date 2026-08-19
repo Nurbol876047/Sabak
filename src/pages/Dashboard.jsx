@@ -51,7 +51,7 @@ const TOPIC_CATEGORIES = [
   }
 ];
 
-export const Dashboard = ({ onNewPlan, onOpenPlan }) => {
+export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
   const [plans, setPlans] = useState([]);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export const Dashboard = ({ onNewPlan, onOpenPlan }) => {
   return (
     <div className="min-h-screen bg-paper-light p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
-        <header className="flex items-center justify-between mb-10">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2 flex items-center gap-3">
               <Briefcase className="text-brand-500 w-8 h-8" />
@@ -84,13 +84,28 @@ export const Dashboard = ({ onNewPlan, onOpenPlan }) => {
             </h1>
             <p className="text-slate-500">Тәрбие сағаттарыңыздың кітапханасы</p>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="secondary" onClick={() => setIsVideoModalOpen(true)} icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>}>
-              Видео
-            </Button>
-            <Button variant="primary" onClick={onNewPlan} icon={<Plus className="w-5 h-5" />}>
-              Жаңа жоспар
-            </Button>
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
+            <div className="bg-slate-100 p-1 rounded-xl flex items-center shadow-inner">
+              <button 
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-brand-700 shadow-sm"
+              >
+                Мұғалім
+              </button>
+              <button 
+                onClick={() => onSwitchRole('deputy')}
+                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition-all"
+              >
+                Орынбасар
+              </button>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="secondary" onClick={() => setIsVideoModalOpen(true)} icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>}>
+                Видео
+              </Button>
+              <Button variant="primary" onClick={onNewPlan} icon={<Plus className="w-5 h-5" />}>
+                Жаңа жоспар
+              </Button>
+            </div>
           </div>
         </header>
 
