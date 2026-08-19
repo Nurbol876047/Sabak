@@ -27,8 +27,11 @@ export async function callAnthropic(prompt, options) {
 }
 
 export async function callGemini(prompt, options) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) throw new Error("Не найден VITE_GEMINI_API_KEY");
+  const apiKeyString = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKeyString) throw new Error("Не найден VITE_GEMINI_API_KEY");
+
+  const keys = apiKeyString.split(',').map(k => k.trim()).filter(Boolean);
+  const apiKey = keys[Math.floor(Math.random() * keys.length)];
 
   const model = options.geminiModel || 'gemini-3.6-flash';
   
