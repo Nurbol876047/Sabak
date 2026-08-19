@@ -79,7 +79,7 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
     <div className="relative min-h-screen text-slate-200 overflow-hidden">
       <Neon3DBackground />
       <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+        <header className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-10">
           <div>
             <h1 className="text-4xl font-bold neon-text mb-2 flex items-center gap-4">
               <Hexagon className="text-brand-500 w-10 h-10 animate-[spin_10s_linear_infinite]" />
@@ -87,8 +87,8 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
             </h1>
             <p className="text-slate-400">Тәрбие сағаттарыңыздың кибер-кітапханасы</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
-            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex flex-wrap items-center justify-start sm:justify-end gap-4 xl:ml-auto w-full xl:w-auto">
+            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] w-full sm:w-auto">
               <button 
                 className="px-4 py-2 text-sm font-bold rounded-lg neon-bg whitespace-nowrap"
               >
@@ -113,7 +113,7 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
                 Көңіл күй
               </button>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-auto sm:ml-0">
               <Button variant="outline" onClick={() => setIsVideoModalOpen(true)} icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>}>
                 Видео
               </Button>
