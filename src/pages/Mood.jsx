@@ -14,7 +14,7 @@ export const Mood = ({ onSwitchRole }) => {
             </div>
           </div>
           
-          <div className="bg-paper/40 p-1 rounded-xl flex items-center shadow-[0_0_15px_rgba(255,255,255,0.15)] border border-brand-500/30 overflow-x-auto">
+          <div className="bg-paper/40 p-1 rounded-xl flex items-center shadow-[0_0_15px_rgba(255,255,255,0.15)] border border-brand-500/30 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <button 
               onClick={() => onSwitchRole('teacher')}
               className="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-brand-500 transition-all whitespace-nowrap"

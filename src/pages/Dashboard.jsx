@@ -88,7 +88,7 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
             <p className="text-slate-400">Тәрбие сағаттарыңыздың кибер-кітапханасы</p>
           </div>
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
-            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)] overflow-x-auto">
+            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <button 
                 className="px-4 py-2 text-sm font-bold rounded-lg neon-bg whitespace-nowrap"
               >
