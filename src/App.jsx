@@ -5,6 +5,7 @@ import { Wizard } from './pages/Wizard';
 import { ResultPage } from './pages/ResultPage';
 import { DeputyDashboard } from './pages/DeputyDashboard';
 import { planStorage } from './utils/planStorage';
+import { Neon3DBackground } from './components/ui/Neon3DBackground';
 
 function App() {
   // Routes: 'landing', 'dashboard', 'wizard', 'result'
@@ -69,7 +70,8 @@ function App() {
   };
 
   return (
-    <div className="font-sans text-slate-900 bg-paper-light min-h-screen">
+    <div className="font-sans text-slate-200 bg-transparent min-h-screen relative z-0">
+      <Neon3DBackground />
       {currentRoute === 'landing' && (
         <LandingPage onStart={() => setCurrentRoute('dashboard')} />
       )}

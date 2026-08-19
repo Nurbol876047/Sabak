@@ -380,29 +380,29 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
           {generatedScenario.intro && (
             <div className="bg-brand-50/50 p-6 rounded-2xl border border-brand-100/50">
               <h3 className="text-xl font-bold text-brand-900 mb-3">Кіріспе</h3>
-              <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{generatedScenario.intro}</p>
+              <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">{generatedScenario.intro}</p>
             </div>
           )}
           
           {generatedScenario.main_parts && generatedScenario.main_parts.length > 0 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-bold text-slate-800">Негізгі бөлім</h3>
+              <h3 className="text-xl font-bold text-slate-200">Негізгі бөлім</h3>
               <div className="space-y-4">
                 {generatedScenario.main_parts.map((part, idx) => (
-                  <div key={idx} className="p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-3">
+                  <div key={idx} className="p-5 rounded-xl border border-brand-500/20 shadow-[0_0_15px_rgba(255,255,255,0.1)] flex flex-col gap-3">
                     <div className="flex items-center justify-between border-b border-slate-50 pb-2">
-                      <h4 className="font-semibold text-slate-800">{part.title}</h4>
-                      <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">
+                      <h4 className="font-semibold text-slate-200">{part.title}</h4>
+                      <span className="text-xs font-medium bg-paper/50 text-slate-300 px-2.5 py-1 rounded-md">
                         {part.duration}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-500 mb-1">Мұғалім:</p>
-                      <p className="text-slate-700 leading-relaxed">{part.teacher_action}</p>
+                      <p className="text-sm font-medium text-slate-400 mb-1">Мұғалім:</p>
+                      <p className="text-slate-200 leading-relaxed">{part.teacher_action}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-500 mb-1">Оқушылар:</p>
-                      <p className="text-slate-700 leading-relaxed">{part.student_action}</p>
+                      <p className="text-sm font-medium text-slate-400 mb-1">Оқушылар:</p>
+                      <p className="text-slate-200 leading-relaxed">{part.student_action}</p>
                     </div>
                   </div>
                 ))}
@@ -411,9 +411,9 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
           )}
           
           {generatedScenario.conclusion && (
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Қорытынды</h3>
-              <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{generatedScenario.conclusion}</p>
+            <div className="bg-paper/40 p-6 rounded-2xl border border-brand-500/20">
+              <h3 className="text-xl font-bold text-slate-200 mb-3">Қорытынды</h3>
+              <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">{generatedScenario.conclusion}</p>
             </div>
           )}
         </div>
@@ -432,7 +432,7 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
     
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-slate-800 mb-6">Тапсырмалар мен белсенділіктер</h2>
+        <h2 className="text-2xl font-bold text-slate-200 mb-6">Тапсырмалар мен белсенділіктер</h2>
         {activitiesToRender.map((act, idx) => {
           // AI data has description, mock data has content
           const isAi = !!generatedActivities;
@@ -443,22 +443,22 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
               <div className="flex items-start justify-between mb-2">
                 <h4 className="text-lg font-semibold text-brand-800">{act.title}</h4>
                 {isAi && (
-                  <span className="text-xs font-medium bg-white text-brand-600 px-2 py-1 rounded-md border border-brand-100">
+                  <span className="text-xs font-medium glass-card text-brand-600 px-2 py-1 rounded-md border border-brand-100">
                     {act.duration}
                   </span>
                 )}
               </div>
               {isAi && (
                 <div className="mb-3">
-                  <span className="inline-block text-xs font-medium text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">
+                  <span className="inline-block text-xs font-medium text-slate-400 uppercase tracking-wider bg-paper/50 px-2 py-0.5 rounded">
                     {act.type}
                   </span>
                 </div>
               )}
-              <p className="text-slate-600 line-clamp-2">{content}</p>
+              <p className="text-slate-300 line-clamp-2">{content}</p>
               
               {isAi && act.materials && (
-                <div className="mt-3 flex items-start gap-2 text-sm text-slate-500">
+                <div className="mt-3 flex items-start gap-2 text-sm text-slate-400">
                   <Paperclip className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <span>{act.materials}</span>
                 </div>
@@ -479,16 +479,16 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
     if (!generatedScenario) {
       return (
         <div>
-           <h2 className="text-2xl font-bold text-slate-800 mb-6">Дайын материалдар</h2>
+           <h2 className="text-2xl font-bold text-slate-200 mb-6">Дайын материалдар</h2>
            <div className="grid sm:grid-cols-2 gap-4">
             {mockLessonPlan.materials.map(mat => (
               <Card key={mat.id} className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-lg bg-blue-500/20 text-blue-500 flex items-center justify-center flex-shrink-0">
                   {mat.type === 'presentation' ? <LayoutList className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-slate-800 truncate">{mat.title}</h4>
-                  <p className="text-xs text-slate-500">{mat.size}</p>
+                  <h4 className="font-medium text-slate-200 truncate">{mat.title}</h4>
+                  <p className="text-xs text-slate-400">{mat.size}</p>
                 </div>
                 <button className="p-2 text-slate-400 hover:text-brand-500 hover:bg-brand-50 rounded-lg transition-colors">
                   <FileDown className="w-5 h-5" />
@@ -507,8 +507,8 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
           <div className="w-20 h-20 bg-brand-50 text-brand-500 flex items-center justify-center rounded-full mx-auto mb-6">
             <Paperclip className="w-10 h-10" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-800 mb-3">Материалдарды жинау қажет</h3>
-          <p className="text-slate-600 mb-8 max-w-md mx-auto">
+          <h3 className="text-2xl font-bold text-slate-200 mb-3">Материалдарды жинау қажет</h3>
+          <p className="text-slate-300 mb-8 max-w-md mx-auto">
             Біз сіздің ағымдағы сценарийіңіз негізінде тапсырмалар карточкаларын, талқылау сұрақтарын және презентацияны дайындаймыз.
           </p>
           
@@ -535,8 +535,8 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
     return (
       <div className="space-y-12">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-6">Сабаққа арналған материалдар</h2>
-          <p className="text-slate-600 mb-8">Материалдар сіздің тапсырмаларыңызға және аудиторияңызға арнайы дайындалған.</p>
+          <h2 className="text-2xl font-bold text-slate-200 mb-6">Сабаққа арналған материалдар</h2>
+          <p className="text-slate-300 mb-8">Материалдар сіздің тапсырмаларыңызға және аудиторияңызға арнайы дайындалған.</p>
         </div>
 
         {generatedMaterials.cards && generatedMaterials.cards.length > 0 && (
@@ -548,11 +548,11 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
               {generatedMaterials.cards.map((card, idx) => (
                 <Card key={idx} className="border-brand-100 bg-brand-50/20">
                   <h4 className="font-semibold text-brand-800 mb-2">{card.title}</h4>
-                  <p className="text-sm text-slate-700 mb-3 leading-relaxed">{card.instructions}</p>
+                  <p className="text-sm text-slate-200 mb-3 leading-relaxed">{card.instructions}</p>
                   {card.questions && card.questions.length > 0 && (
-                    <div className="mt-3 bg-white p-3 rounded-lg border border-brand-50">
-                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Сұрақтар:</p>
-                      <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                    <div className="mt-3 glass-card p-3 rounded-lg border border-brand-50">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Сұрақтар:</p>
+                      <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
                         {card.questions.map((q, i) => <li key={i}>{q}</li>)}
                       </ul>
                     </div>
@@ -568,10 +568,10 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
             <h3 className="text-xl font-bold text-brand-900 mb-4 flex items-center gap-2">
               <LayoutList className="w-5 h-5" /> Талқылауға арналған сұрақтар
             </h3>
-            <Card className="bg-white">
+            <Card className="glass-card">
               <ul className="space-y-3">
                 {generatedMaterials.questions.map((q, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-slate-700">
+                  <li key={idx} className="flex items-start gap-3 text-slate-200">
                     <span className="text-brand-500 font-bold mt-0.5">•</span>
                     <span>{q}</span>
                   </li>
@@ -588,8 +588,8 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
             </h3>
             <div className="space-y-4">
               {generatedMaterials.texts.map((text, idx) => (
-                <Card key={idx} className="bg-slate-50/50 border-slate-200">
-                  <p className="text-slate-700 leading-relaxed">{text}</p>
+                <Card key={idx} className="bg-paper/40/50 border-brand-500/30">
+                  <p className="text-slate-200 leading-relaxed">{text}</p>
                 </Card>
               ))}
             </div>
@@ -603,14 +603,14 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
             </h3>
             <div className="space-y-4">
               {generatedMaterials.presentation.map((slide, idx) => (
-                <Card key={idx} className="flex flex-col sm:flex-row gap-6 border-slate-200">
-                  <div className="sm:w-1/3 flex flex-col justify-center items-center bg-slate-100 rounded-xl p-6 min-h-[160px] text-center border border-slate-200">
-                    <h4 className="font-bold text-slate-800 mb-2">{slide.slideTitle}</h4>
-                    <p className="text-sm text-slate-600 whitespace-pre-wrap">{slide.content}</p>
+                <Card key={idx} className="flex flex-col sm:flex-row gap-6 border-brand-500/30">
+                  <div className="sm:w-1/3 flex flex-col justify-center items-center bg-paper/50 rounded-xl p-6 min-h-[160px] text-center border border-brand-500/30">
+                    <h4 className="font-bold text-slate-200 mb-2">{slide.slideTitle}</h4>
+                    <p className="text-sm text-slate-300 whitespace-pre-wrap">{slide.content}</p>
                   </div>
                   <div className="sm:w-2/3 py-2">
                     <p className="text-xs font-bold text-brand-500 uppercase tracking-wider mb-2">Мұғалімге арналған ескертпе:</p>
-                    <p className="text-sm text-slate-700 leading-relaxed bg-brand-50/50 p-4 rounded-xl border border-brand-100/50">
+                    <p className="text-sm text-slate-200 leading-relaxed bg-brand-50/50 p-4 rounded-xl border border-brand-100/50">
                       {slide.speakerNote}
                     </p>
                   </div>
@@ -635,19 +635,19 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
   const showDurationWarning = durationDiff > 5;
 
   return (
-    <div className="min-h-screen bg-paper-light">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <header className="glass-card border-b border-brand-500/30 sticky top-0 z-40 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <button onClick={onBack} className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">
+            <button onClick={onBack} className="p-2 text-slate-400 hover:text-slate-200 bg-paper/40 hover:bg-paper/50 rounded-lg transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-slate-800">
+              <h1 className="text-xl font-bold text-slate-200">
                 {planParams ? planParams.topic : mockLessonPlan.title}
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-400">
                 {planParams ? `${planParams.age} • ${planParams.duration} минут` : `${mockLessonPlan.target} • ${mockLessonPlan.duration} минут`}
               </p>
             </div>
@@ -666,14 +666,14 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
             <Button variant="ghost" onClick={handleShare} icon={<Share2 className="w-4 h-4" />}>
               Бөлісу
             </Button>
-            <div className="flex bg-slate-100 p-1 rounded-xl mr-2">
-              <Button variant="ghost" onClick={handleDownloadPdf} className="px-3 py-1.5 h-auto text-sm text-slate-600 hover:text-slate-900" title="PDF жүктеп алу">
+            <div className="flex bg-paper/50 p-1 rounded-xl mr-2">
+              <Button variant="ghost" onClick={handleDownloadPdf} className="px-3 py-1.5 h-auto text-sm text-slate-300 hover:text-slate-900" title="PDF жүктеп алу">
                 PDF
               </Button>
-              <Button variant="ghost" onClick={handleDownloadWord} className="px-3 py-1.5 h-auto text-sm text-slate-600 hover:text-slate-900 border-l border-slate-200 rounded-none" title="Word жүктеп алу">
+              <Button variant="ghost" onClick={handleDownloadWord} className="px-3 py-1.5 h-auto text-sm text-slate-300 hover:text-slate-900 border-l border-brand-500/30 rounded-none" title="Word жүктеп алу">
                 DOCX
               </Button>
-              <Button variant="ghost" onClick={handleDownloadZip} className="px-3 py-1.5 h-auto text-sm text-slate-600 hover:text-slate-900 border-l border-slate-200 rounded-none" title="ZIP жүктеп алу">
+              <Button variant="ghost" onClick={handleDownloadZip} className="px-3 py-1.5 h-auto text-sm text-slate-300 hover:text-slate-900 border-l border-brand-500/30 rounded-none" title="ZIP жүктеп алу">
                 ZIP
               </Button>
             </div>
@@ -704,14 +704,14 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
         {/* Left column: Timeline */}
         <aside className="lg:w-80 flex-shrink-0">
           <div className="sticky top-28 space-y-4">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-              <h3 className="text-lg font-bold text-slate-800 mb-6">Таймлайн</h3>
+            <div className="glass-card p-6 rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/20">
+              <h3 className="text-lg font-bold text-slate-200 mb-6">Таймлайн</h3>
               <Timeline items={timelineData ? timelineData.items : mockLessonPlan.timeline} />
             </div>
             
             {/* Duration Warning */}
             {timelineData && showDurationWarning && (
-              <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex gap-3 text-amber-800">
+              <div className="bg-amber-500/20 p-4 rounded-xl border border-amber-500/30 flex gap-3 text-amber-200">
                 <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-600" />
                 <p className="text-sm">
                   Жоспардың жалпы ұзақтығы ({timelineData.totalDuration} мин) көрсетілгеннен ({timelineData.targetDuration} мин) ерекшеленеді. Мұны өткізу кезінде ескеріңіз.
@@ -727,7 +727,7 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
             <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
           </div>
 
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 min-h-[600px]">
+          <div className="glass-card rounded-3xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/20 p-8 min-h-[600px]">
             {activeTab === 'scenario' && renderScenario()}
 
             {activeTab === 'activities' && renderActivities()}
@@ -746,8 +746,8 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
         {isImproving ? (
           <div className="flex flex-col items-center justify-center py-10">
             <div className="w-10 h-10 border-4 border-brand-200 border-t-brand-500 rounded-full animate-spin mb-4" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">Жоспарды талдаудамыз...</h3>
-            <p className="text-sm text-slate-500 text-center">Оқушылардың қатысуын арттыру жолдарын іздеудеміз.</p>
+            <h3 className="text-lg font-medium text-slate-200 mb-2">Жоспарды талдаудамыз...</h3>
+            <p className="text-sm text-slate-400 text-center">Оқушылардың қатысуын арттыру жолдарын іздеудеміз.</p>
           </div>
         ) : improveError ? (
           <div className="text-center py-6">
@@ -757,7 +757,7 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
         ) : recommendations && recommendations.length > 0 ? (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <p className="text-slate-600 text-sm">{recommendations.length} ұсыныс табылды</p>
+              <p className="text-slate-300 text-sm">{recommendations.length} ұсыныс табылды</p>
               <Button 
                 onClick={handleApplyAll} 
                 disabled={isApplyingAll || applyingRecId !== null}
@@ -778,23 +778,23 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
                 const isApplyingAny = applyingRecId !== null || isApplyingAll;
                 
                 return (
-                  <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+                  <div key={idx} className="p-4 rounded-xl border border-brand-500/30 bg-paper/40/50">
                     <div className="flex items-start justify-between gap-4 mb-2">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
                             rec.priority === 'high' ? 'bg-red-100 text-red-700' :
                             rec.priority === 'medium' ? 'bg-amber-100 text-amber-700' :
-                            'bg-slate-200 text-slate-700'
+                            'bg-slate-200 text-slate-200'
                           }`}>
                             {rec.priority || 'low'}
                           </span>
                           <span className="text-xs font-semibold text-brand-600 uppercase tracking-wider">{rec.area}</span>
                         </div>
-                        <span className="font-medium text-slate-800 block text-sm">{rec.issue}</span>
+                        <span className="font-medium text-slate-200 block text-sm">{rec.issue}</span>
                       </div>
                     </div>
-                    <p className="text-sm text-slate-600 mb-3">{rec.suggestion}</p>
+                    <p className="text-sm text-slate-300 mb-3">{rec.suggestion}</p>
                     <div className="flex justify-end">
                       <Button 
                         onClick={() => handleApplyRecommendation(rec, idx)} 
@@ -813,8 +813,8 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
         ) : recommendations && recommendations.length === 0 ? (
           <div className="text-center py-10">
             <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-slate-800">Жоспар тамаша көрінеді!</h3>
-            <p className="text-sm text-slate-500">Біздің AI маңызды мәселелер таппады.</p>
+            <h3 className="text-lg font-medium text-slate-200">Жоспар тамаша көрінеді!</h3>
+            <p className="text-sm text-slate-400">Біздің AI маңызды мәселелер таппады.</p>
           </div>
         ) : null}
       </Modal>
@@ -828,18 +828,18 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
         {isAdapting ? (
           <div className="flex flex-col items-center justify-center py-10">
             <div className="w-12 h-12 border-4 border-brand-200 border-t-brand-500 rounded-full animate-spin mb-4" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">Жоспарды қайта құрудамыз...</h3>
-            <p className="text-sm text-slate-500 text-center max-w-sm">Біз құрылымды сақтаймыз, бірақ тапсырмалар мен беру тәсілін жаңа параметрлеріңізге бейімдейміз.</p>
+            <h3 className="text-lg font-medium text-slate-200 mb-2">Жоспарды қайта құрудамыз...</h3>
+            <p className="text-sm text-slate-400 text-center max-w-sm">Біз құрылымды сақтаймыз, бірақ тапсырмалар мен беру тәсілін жаңа параметрлеріңізге бейімдейміз.</p>
           </div>
         ) : adaptError ? (
           <div className="text-center py-6">
-            <div className="w-16 h-16 bg-red-50 text-red-500 flex items-center justify-center rounded-full mx-auto mb-4">
+            <div className="w-16 h-16 bg-red-500/20 text-red-500 flex items-center justify-center rounded-full mx-auto mb-4">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Бейімдеу қатесі</h3>
-            <p className="text-slate-600 mb-6">{adaptError}</p>
+            <h3 className="text-xl font-bold text-slate-200 mb-2">Бейімдеу қатесі</h3>
+            <p className="text-slate-300 mb-6">{adaptError}</p>
             <div className="flex justify-center gap-3">
               <Button variant="ghost" onClick={() => setAdaptError(null)}>Артқа</Button>
               <Button variant="primary" onClick={handleAdaptSubmit}>Қайта көру</Button>
@@ -849,28 +849,28 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Жасы/Сынып</label>
+                <label className="block text-sm font-medium text-slate-200 mb-1">Жасы/Сынып</label>
                 <input 
                   type="text" 
-                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-500 outline-none"
+                  className="w-full border border-brand-500/30 rounded-xl p-3 focus:ring-2 focus:ring-brand-500 outline-none"
                   value={adaptFormData.age}
                   onChange={e => setAdaptFormData({...adaptFormData, age: e.target.value})}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Оқушылар саны</label>
+                <label className="block text-sm font-medium text-slate-200 mb-1">Оқушылар саны</label>
                 <input 
                   type="number" 
-                  className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-500 outline-none"
+                  className="w-full border border-brand-500/30 rounded-xl p-3 focus:ring-2 focus:ring-brand-500 outline-none"
                   value={adaptFormData.studentsCount}
                   onChange={e => setAdaptFormData({...adaptFormData, studentsCount: e.target.value})}
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Сынып ерекшеліктері (міндетті емес)</label>
+              <label className="block text-sm font-medium text-slate-200 mb-1">Сынып ерекшеліктері (міндетті емес)</label>
               <textarea 
-                className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-500 outline-none resize-none h-24"
+                className="w-full border border-brand-500/30 rounded-xl p-3 focus:ring-2 focus:ring-brand-500 outline-none resize-none h-24"
                 placeholder="Мысалы: Зейін тапшылығы бар балалар бар, тәртіп нашар..."
                 value={adaptFormData.features}
                 onChange={e => setAdaptFormData({...adaptFormData, features: e.target.value})}
@@ -894,7 +894,7 @@ export const ResultPage = ({ onBack, currentPlanId, onPlanSaved, generatedScenar
       >
         <div className="space-y-6">
           <textarea 
-            className="w-full h-64 border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none resize-y"
+            className="w-full h-64 border border-brand-500/30 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none resize-y"
             defaultValue={selectedItem?.content}
           />
           <div className="flex justify-end gap-3">

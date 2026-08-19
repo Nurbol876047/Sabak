@@ -119,8 +119,8 @@ export const Wizard = ({ onBack, onComplete, aiProvider, initialTopic = '' }) =>
 
   if (isGenerating) {
     return (
-      <div className="min-h-screen bg-paper-light flex items-center justify-center p-6">
-        <div className="bg-white p-10 rounded-3xl shadow-soft w-full max-w-lg">
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
+        <div className="glass-card p-10 rounded-3xl shadow-[0_0_20px_rgba(255,255,255,0.15)] w-full max-w-lg">
           <ProgressLoader 
             statusText={generationState.status}
             progress={generationState.progress}
@@ -136,43 +136,43 @@ export const Wizard = ({ onBack, onComplete, aiProvider, initialTopic = '' }) =>
   }
 
   return (
-    <div className="min-h-screen bg-paper-light p-6 md:p-10 flex justify-center">
+    <div className="min-h-screen bg-transparent p-6 md:p-10 flex justify-center">
       <div className="w-full max-w-2xl">
-        <button onClick={onBack} className="flex items-center text-slate-500 hover:text-slate-800 mb-8 transition-colors">
+        <button onClick={onBack} className="flex items-center text-slate-400 hover:text-slate-200 mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" /> Чемоданға қайту
         </button>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 md:p-12">
+        <div className="glass-card rounded-3xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/20 p-8 md:p-12">
           {/* Steps indicator */}
           <div className="flex items-center gap-3 mb-10">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium \${step >= 1 ? 'bg-brand-500 text-white' : 'bg-slate-100 text-slate-400'}`}>1</div>
-            <div className={`h-1 w-12 rounded-full \${step >= 2 ? 'bg-brand-500' : 'bg-slate-100'}`} />
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium \${step >= 2 ? 'bg-brand-500 text-white' : 'bg-slate-100 text-slate-400'}`}>2</div>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium \${step >= 1 ? 'bg-brand-500 text-white' : 'bg-paper/50 text-slate-400'}`}>1</div>
+            <div className={`h-1 w-12 rounded-full \${step >= 2 ? 'bg-brand-500' : 'bg-paper/50'}`} />
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium \${step >= 2 ? 'bg-brand-500 text-white' : 'bg-paper/50 text-slate-400'}`}>2</div>
           </div>
 
-          <h2 className="text-3xl font-bold text-slate-800 mb-8">
+          <h2 className="text-3xl font-bold text-slate-200 mb-8">
             {step === 1 ? 'Не туралы сөйлесеміз?' : 'Сынып параметрлері'}
           </h2>
 
           {step === 1 ? (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Іс-шара тақырыбы немесе идеясы</label>
+                <label className="block text-sm font-medium text-slate-200 mb-2">Іс-шара тақырыбы немесе идеясы</label>
                 <textarea 
-                  className="w-full border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none h-32 text-slate-800"
+                  className="w-full border border-brand-500/30 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none h-32 text-slate-200"
                   placeholder="Мысалы: Интернетте өзіңді қалай қорғауға болады..."
                   value={formData.topic}
                   onChange={e => setFormData({...formData, topic: e.target.value})}
                 />
               </div>
               <div>
-                <p className="text-sm text-slate-500 mb-3">Жылдам идеялар:</p>
+                <p className="text-sm text-slate-400 mb-3">Жылдам идеялар:</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map(s => (
                     <button 
                       key={s} 
                       onClick={() => setFormData({...formData, topic: s})}
-                      className="px-4 py-2 bg-slate-50 hover:bg-brand-50 text-slate-600 hover:text-brand-700 rounded-lg text-sm transition-colors border border-slate-100"
+                      className="px-4 py-2 bg-paper/40 hover:bg-brand-50 text-slate-300 hover:text-brand-700 rounded-lg text-sm transition-colors border border-brand-500/20"
                     >
                       {s}
                     </button>
@@ -184,29 +184,29 @@ export const Wizard = ({ onBack, onComplete, aiProvider, initialTopic = '' }) =>
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Жасы/Сынып</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Жасы/Сынып</label>
                   <input 
                     type="text" 
-                    className="w-full border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none"
+                    className="w-full border border-brand-500/30 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none"
                     placeholder="Мысалы: 1-4 сынып"
                     value={formData.age}
                     onChange={e => setFormData({...formData, age: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Оқушылар саны</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Оқушылар саны</label>
                   <input 
                     type="number" 
-                    className="w-full border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none"
+                    className="w-full border border-brand-500/30 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none"
                     placeholder="Мысалы: 25"
                     value={formData.studentsCount}
                     onChange={e => setFormData({...formData, studentsCount: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Уақыт (минут)</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Уақыт (минут)</label>
                   <select 
-                    className="w-full border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none bg-white"
+                    className="w-full border border-brand-500/30 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none glass-card"
                     value={formData.duration}
                     onChange={e => setFormData({...formData, duration: e.target.value})}
                   >
@@ -217,9 +217,9 @@ export const Wizard = ({ onBack, onComplete, aiProvider, initialTopic = '' }) =>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Сынып ерекшеліктері (міндетті емес)</label>
+                <label className="block text-sm font-medium text-slate-200 mb-2">Сынып ерекшеліктері (міндетті емес)</label>
                 <textarea 
-                  className="w-full border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none resize-none h-24"
+                  className="w-full border border-brand-500/30 rounded-xl p-4 focus:ring-2 focus:ring-brand-500 outline-none resize-none h-24"
                   placeholder="Мысалы: Балалар белсенді, рөлдік ойындарды жақсы көреді..."
                   value={formData.features}
                   onChange={e => setFormData({...formData, features: e.target.value})}

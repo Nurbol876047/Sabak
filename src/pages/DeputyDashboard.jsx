@@ -574,7 +574,7 @@ ${planContext}
               Мұғалім
             </button>
             <button 
-              className="px-4 py-2 text-sm font-medium rounded-lg bg-paper/80 backdrop-blur-md text-brand-500 shadow-sm"
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-paper/80 backdrop-blur-md text-brand-500 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
             >
               Орынбасар
             </button>
@@ -630,7 +630,7 @@ ${planContext}
           {/* PEDSOVET TAB */}
           {activeTab === 'pedsovet' && !generatedPedsovet && (
             <div className="space-y-6">
-              <Card className="bg-paper/80 backdrop-blur-md shadow-sm border-brand-500/30">
+              <Card className="bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border-brand-500/30">
                 <h2 className="text-3xl font-bold neon-text mb-6">Педкеңеске / семинарға материалдар</h2>
                 
                 <div className="space-y-6">
@@ -698,7 +698,7 @@ ${planContext}
                   </div>
 
                   {pedsovetError && (
-                    <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm">
+                    <div className="p-4 bg-red-500/20 text-red-600 rounded-lg text-sm">
                       {pedsovetError}
                     </div>
                   )}
@@ -749,7 +749,7 @@ ${planContext}
 
           {activeTab === 'pedsovet' && generatedPedsovet && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-brand-500/30">
+              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-brand-500/20 text-brand-500 rounded-xl">
                     <Briefcase className="w-8 h-8" />
@@ -769,7 +769,7 @@ ${planContext}
                 </div>
               </div>
 
-              <div className="bg-paper/80 backdrop-blur-md rounded-2xl border border-brand-500/30 shadow-sm overflow-hidden flex flex-col">
+              <div className="bg-paper/80 backdrop-blur-md rounded-2xl border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.1)] overflow-hidden flex flex-col">
                 <div className="flex border-b border-brand-500/30 bg-paper/60 backdrop-blur-md">
                   <button 
                     onClick={() => setPedsovetView('presentation')}
@@ -832,13 +832,13 @@ ${planContext}
                         </Button>
                       </div>
 
-                      <Card className="bg-amber-50 border-amber-200 mt-6">
+                      <Card className="bg-amber-500/20 border-amber-500/30 mt-6">
                         <div className="flex gap-4">
                           <div className="p-2 bg-amber-100 text-amber-600 rounded-lg h-fit">
                             <FileText className="w-5 h-5" />
                           </div>
                           <div>
-                            <h3 className="font-bold text-amber-800 mb-2">Спикер сөзі:</h3>
+                            <h3 className="font-bold text-amber-200 mb-2">Спикер сөзі:</h3>
                             <p className="text-amber-900 leading-relaxed text-lg">
                               {generatedPedsovet.presentation[currentSlide].speakerNote}
                             </p>
@@ -858,7 +858,7 @@ ${planContext}
                           </h3>
                           <ul className="space-y-4">
                             {generatedPedsovet.guide.keyMessages.map((msg, idx) => (
-                              <li key={idx} className="flex gap-3 text-slate-200 bg-paper/60 backdrop-blur-md p-4 rounded-xl border border-slate-100">
+                              <li key={idx} className="flex gap-3 text-slate-200 bg-paper/60 backdrop-blur-md p-4 rounded-xl border border-brand-500/20">
                                 <span className="font-bold text-brand-500">{idx + 1}.</span>
                                 <span className="leading-relaxed">{msg}</span>
                               </li>
@@ -896,7 +896,7 @@ ${planContext}
                               navigator.clipboard.writeText(generatedPedsovet.guide.handoutSummary);
                               alert('Памятка мәтіні көшірілді!');
                             }}
-                            className="absolute top-4 right-4 p-2 bg-brand-500/10 shadow-sm border border-indigo-100 rounded-lg text-brand-500 hover:bg-brand-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-4 right-4 p-2 bg-brand-500/10 shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-indigo-100 rounded-lg text-brand-500 hover:bg-brand-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
                             title="Көшіру"
                           >
                             <Copy className="w-5 h-5" />
@@ -912,7 +912,7 @@ ${planContext}
 
           {activeTab === 'materials' && !generatedGuide && (
             <div className="space-y-6">
-              <Card className="bg-paper/80 backdrop-blur-md shadow-sm border-brand-500/30">
+              <Card className="bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border-brand-500/30">
                 <h2 className="text-3xl font-bold neon-text mb-6">Жаңа әдістемелік құрал құру</h2>
                 
                 <div className="space-y-6">
@@ -994,7 +994,7 @@ ${planContext}
 
           {activeTab === 'materials' && generatedGuide && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-brand-500/30">
+              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-brand-500/20 text-brand-500 rounded-xl">
                     <FileText className="w-8 h-8" />
@@ -1045,7 +1045,7 @@ ${planContext}
                       <div className="space-y-4">
                         {generatedGuide.templates.map((tpl, idx) => (
                           <div key={idx} className="relative group">
-                            <pre className="bg-paper/60 backdrop-blur-md p-4 rounded-xl text-sm text-slate-200 whitespace-pre-wrap font-sans border border-slate-100">
+                            <pre className="bg-paper/60 backdrop-blur-md p-4 rounded-xl text-sm text-slate-200 whitespace-pre-wrap font-sans border border-brand-500/20">
                               {tpl}
                             </pre>
                             <button 
@@ -1053,7 +1053,7 @@ ${planContext}
                                 navigator.clipboard.writeText(tpl);
                                 alert('Мәтін көшірілді!');
                               }}
-                              className="absolute top-2 right-2 p-2 bg-paper/80 backdrop-blur-md shadow-sm border border-brand-500/30 rounded-lg text-slate-400 hover:text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-2 right-2 p-2 bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30 rounded-lg text-slate-400 hover:text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity"
                               title="Көшіру"
                             >
                               <Copy className="w-4 h-4" />
@@ -1087,7 +1087,7 @@ ${planContext}
 
           {/* ONBOARDING TAB */}
           {activeTab === 'onboarding' && !activeChecklist && (
-            <Card className="max-w-2xl bg-paper/80 backdrop-blur-md shadow-sm border-brand-500/30">
+            <Card className="max-w-2xl bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border-brand-500/30">
               <h2 className="text-3xl font-bold neon-text mb-6">Жаңа маманға арналған чек-лист</h2>
               <p className="text-slate-300 mb-6">Бұл чек-лист жаңадан тағайындалған тәрбие ісі жөніндегі орынбасарына оқу жылын дұрыс бастауға көмектеседі.</p>
               
@@ -1128,7 +1128,7 @@ ${planContext}
                 </div>
 
                 {onboardingError && (
-                  <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm">
+                  <div className="p-4 bg-red-500/20 text-red-600 rounded-lg text-sm">
                     {onboardingError}
                   </div>
                 )}
@@ -1150,7 +1150,7 @@ ${planContext}
 
           {activeTab === 'onboarding' && activeChecklist && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-brand-500/30">
+              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-brand-500/20 text-brand-500 rounded-xl">
                     <CheckSquare className="w-8 h-8" />
@@ -1254,7 +1254,7 @@ ${planContext}
           )}
 
           {activeTab === 'annual_plan' && !generatedPlan && (
-            <Card className="max-w-2xl bg-paper/80 backdrop-blur-md shadow-sm border-brand-500/30">
+            <Card className="max-w-2xl bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border-brand-500/30">
               <h2 className="text-3xl font-bold neon-text mb-6">Жылдық тәрбие жоспарын құру</h2>
               
               <div className="space-y-6">
@@ -1315,7 +1315,7 @@ ${planContext}
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm">
+                  <div className="p-4 bg-red-500/20 text-red-600 rounded-lg text-sm">
                     {error}
                   </div>
                 )}
@@ -1337,7 +1337,7 @@ ${planContext}
 
           {activeTab === 'annual_plan' && generatedPlan && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-brand-500/30">
+              <div className="flex items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30">
                 <div>
                   <h2 className="text-3xl font-bold neon-text">Тәрбие жұмысының жоспары</h2>
                   <p className="text-slate-400">{formData.year} оқу жылы • {formData.period}</p>
@@ -1357,7 +1357,7 @@ ${planContext}
 
               <div className="space-y-4">
                 {generatedPlan.map((monthData, mIdx) => (
-                  <Card key={mIdx} className="bg-paper/80 backdrop-blur-md shadow-sm border-brand-500/30 p-0 overflow-hidden">
+                  <Card key={mIdx} className="bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border-brand-500/30 p-0 overflow-hidden">
                     <div className="bg-paper/60 backdrop-blur-md px-6 py-4 border-b border-brand-500/30">
                       <h3 className="text-lg font-bold text-slate-100">{monthData.month}</h3>
                     </div>
@@ -1391,7 +1391,7 @@ ${planContext}
           {/* REPORTS TAB */}
           {activeTab === 'reports' && !generatedReport && (
             <div className="space-y-6">
-              <Card className="p-6 md:p-8 border-indigo-100/50 shadow-sm shadow-indigo-100/20">
+              <Card className="p-6 md:p-8 border-indigo-100/50 shadow-[0_0_15px_rgba(255,255,255,0.1)] shadow-indigo-100/20">
                 <h2 className="text-3xl font-bold neon-text mb-6">Есеп дайындау (Генератор отчетов)</h2>
                 
                 <div className="space-y-6">
@@ -1436,7 +1436,7 @@ ${planContext}
                   </div>
 
                   {reportError && (
-                    <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium">
+                    <div className="p-4 bg-red-500/20 text-red-600 rounded-xl text-sm font-medium">
                       {reportError}
                     </div>
                   )}
@@ -1486,7 +1486,7 @@ ${planContext}
 
           {activeTab === 'reports' && generatedReport && (
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-brand-500/30 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-paper/80 backdrop-blur-md p-6 rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30 gap-4">
                 <div>
                   <h2 className="text-3xl font-bold neon-text">{generatedReport.title || 'Есеп'}</h2>
                   <p className="text-slate-400">Ресми стильде дайындалған мәтін</p>
@@ -1605,7 +1605,7 @@ const EditableTopicRow = ({ topic, onUpdate, onDelete }) => {
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
               onClick={() => setIsEditing(true)}
-              className="p-2 text-slate-400 hover:text-brand-500 bg-paper/80 backdrop-blur-md shadow-sm border border-brand-500/30 rounded-lg"
+              className="p-2 text-slate-400 hover:text-brand-500 bg-paper/80 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-brand-500/30 rounded-lg"
             >
               <Edit2 className="w-4 h-4" />
             </button>

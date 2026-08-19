@@ -51,7 +51,7 @@ function NeonParticles() {
 
 export const Neon3DBackground = () => {
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-none bg-paper-light">
+    <div className="fixed inset-0 z-[-1] pointer-events-none bg-transparent">
       <Canvas camera={{ position: [0, 0, 30], fov: 60 }}>
         <ambientLight intensity={0.2} />
         <pointLight position={[10, 10, 10]} intensity={2} color="#ffffff" />

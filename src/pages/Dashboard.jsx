@@ -135,7 +135,7 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
                       {item.target}
                     </span>
                     <button 
-                      className="text-slate-500 hover:text-red-500 hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] transition-all p-1"
+                      className="text-slate-400 hover:text-red-500 hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] transition-all p-1"
                       onClick={(e) => handleDelete(e, item.id)}
                       title="Жоспарды жою"
                     >
