@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Briefcase, FileText, CheckSquare, Users, Loader2, Download, Plus, Trash2, Edit2, Check, X, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Briefcase, FileText, CheckSquare, Users, Loader2, Download, Plus, Trash2, Edit2, Check, X, Calendar, Copy, ChevronRight, Save } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { callGemini } from '../api/aiClient';
+import { planStorage } from '../utils/planStorage';
 
 export const DeputyDashboard = ({ onSwitchRole }) => {
   const [activeTab, setActiveTab] = useState('annual_plan');
@@ -11,7 +12,6 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
   const [generatedPlan, setGeneratedPlan] = useState(null);
-  
   // Form state
   const [formData, setFormData] = useState({
     year: '2026-2027',
@@ -23,6 +23,20 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
     },
     features: ''
   });
+
+  // Guide state
+  const [guideTopic, setGuideTopic] = useState('');
+  const [isGeneratingGuide, setIsGeneratingGuide] = useState(false);
+  const [guideError, setGuideError] = useState(null);
+  const [generatedGuide, setGeneratedGuide] = useState(null);
+  const [savedGuides, setSavedGuides] = useState([]);
+
+  useEffect(() => {
+    if (activeTab === 'materials') {
+      const plans = planStorage.listPlans();
+      setSavedGuides(plans.filter(p => p.type === 'methodicalGuide'));
+    }
+  }, [activeTab]);
 
   const handleCheckbox = (group) => {
     setFormData(prev => ({
@@ -109,6 +123,91 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
     alert("Бұл мүмкіндік келесі жаңартуларда қосылады (экспорт в DOCX/PDF)!");
   };
 
+  const PRESET_TOPICS = [
+    "Сынып жетекшілерінің жұмысын ұйымдастыру",
+    "Тәрбие жұмысының құжаттамасы және есептілік",
+    "Педкеңес/жиналыс өткізу",
+    "Жалпы мектептік іс-шараларды ұйымдастыру",
+    "Мектептегі тәрбие жұмысын бақылау және мониторинг"
+  ];
+
+  const handleGenerateGuide = async (topicToGenerate) => {
+    const topic = topicToGenerate || guideTopic;
+    if (!topic.trim()) {
+      alert("Тақырыпты енгізіңіз немесе тізімнен таңдаңыз!");
+      return;
+    }
+
+    setIsGeneratingGuide(true);
+    setGuideError(null);
+    setGuideTopic(topic);
+
+    const prompt = `
+Ты опытный методист и заместитель директора по воспитательной работе (тәрбие ісі жөніндегі орынбасары) в школе Казахстана.
+Составь методичку (нұсқаулық) для завуча по теме: "${topic}".
+Методичка должна решать задачи именно ЗАВУЧА (управление, контроль, организация работы учителей), а не классного руководителя (как провести урок).
+
+ОТВЕЧАЙ ТОЛЬКО В ФОРМАТЕ JSON, БЕЗ MARKDOWN, БЕЗ ПОЯСНЕНИЙ!
+Весь текст должен быть на КАЗАХСКОМ ЯЗЫКЕ.
+
+Формат JSON:
+{
+  "title": "Название методички",
+  "purpose": "Для чего нужна эта методичка, когда применять",
+  "steps": [
+    {
+      "stepTitle": "Название шага",
+      "stepDescription": "Подробное описание действий"
+    }
+  ],
+  "checklist": [
+    "Пункт 1 для самопроверки",
+    "Пункт 2"
+  ],
+  "templates": [
+    "Здесь может быть готовый текст шаблона (например, текст приказа, шаблон плана совещания или отчета), который можно скопировать. Если шаблоны не нужны, оставь пустой массив."
+  ]
+}
+`;
+
+    try {
+      const responseText = await callGemini(prompt, { temperature: 0.7 });
+      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const firstBrace = cleanedText.indexOf('{');
+      const lastBrace = cleanedText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
+      }
+      
+      const data = JSON.parse(cleanedText);
+      if (data && data.title) {
+        setGeneratedGuide(data);
+      } else {
+        throw new Error("Invalid JSON structure");
+      }
+    } catch (err) {
+      console.error(err);
+      setGuideError('Генерация кезінде қате пайда болды. Қайталап көріңіз.');
+    } finally {
+      setIsGeneratingGuide(false);
+    }
+  };
+
+  const handleSaveGuide = () => {
+    if (!generatedGuide) return;
+    planStorage.savePlan({
+      title: generatedGuide.title,
+      type: 'methodicalGuide',
+      guide: generatedGuide,
+      params: { duration: '-', age: 'Орынбасар' }
+    });
+    alert("Әдістемелік құрал сақталды!");
+    const plans = planStorage.listPlans();
+    setSavedGuides(plans.filter(p => p.type === 'methodicalGuide'));
+    setGeneratedGuide(null);
+    setGuideTopic('');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
@@ -174,13 +273,188 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
         </aside>
 
         <section className="flex-1">
-          {activeTab !== 'annual_plan' && (
+          {activeTab !== 'annual_plan' && activeTab !== 'materials' && (
             <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-2xl border border-slate-200 border-dashed">
               <div className="p-4 bg-indigo-50 rounded-full mb-4">
                 <FileText className="w-8 h-8 text-indigo-400" />
               </div>
               <h2 className="text-xl font-bold text-slate-800 mb-2">Бұл бөлім жақын арада іске қосылады</h2>
               <p className="text-slate-500 max-w-md">Біз осы функцияның үстінде жұмыс істеп жатырмыз. Жаңа жаңартуларды күтіңіз!</p>
+            </div>
+          )}
+
+          {activeTab === 'materials' && !generatedGuide && (
+            <div className="space-y-6">
+              <Card className="bg-white shadow-sm border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800 mb-6">Жаңа әдістемелік құрал құру</h2>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-3">Дайын тақырыпты таңдаңыз</label>
+                    <div className="flex flex-wrap gap-2">
+                      {PRESET_TOPICS.map((topic, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleGenerateGuide(topic)}
+                          className="px-4 py-2 bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 rounded-full text-sm font-medium transition-colors text-left"
+                        >
+                          {topic}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div className="w-full border-t border-slate-200" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-3 bg-white text-sm text-slate-400">немесе</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Өз тақырыбыңызды енгізіңіз</label>
+                    <div className="flex gap-3">
+                      <input 
+                        type="text" 
+                        value={guideTopic}
+                        onChange={(e) => setGuideTopic(e.target.value)}
+                        placeholder="Мысалы: Жаңа келген сынып жетекшісіне арналған нұсқаулық..."
+                        className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        onKeyDown={(e) => e.key === 'Enter' && handleGenerateGuide(guideTopic)}
+                      />
+                      <Button 
+                        onClick={() => handleGenerateGuide(guideTopic)} 
+                        disabled={isGeneratingGuide}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white whitespace-nowrap"
+                      >
+                        {isGeneratingGuide ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Құру'}
+                      </Button>
+                    </div>
+                    {guideError && (
+                      <p className="mt-2 text-sm text-red-600">{guideError}</p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              {savedGuides.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">Сақталған материалдар</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {savedGuides.map(guide => (
+                      <Card key={guide.id} className="p-4 hover:border-indigo-300 transition-colors cursor-pointer" onClick={() => {
+                        const plan = planStorage.getPlan(guide.id);
+                        if (plan && plan.guide) setGeneratedGuide(plan.guide);
+                      }}>
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 shrink-0">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{guide.title}</h4>
+                            <p className="text-xs text-slate-500">{new Date(guide.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'materials' && generatedGuide && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <FileText className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-1 leading-tight">{generatedGuide.title}</h2>
+                    <p className="text-slate-600">{generatedGuide.purpose}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Button variant="outline" onClick={() => setGeneratedGuide(null)}>
+                    Артқа
+                  </Button>
+                  <Button onClick={handleSaveGuide} className="bg-indigo-600 hover:bg-indigo-700 text-white" icon={<Save className="w-4 h-4" />}>
+                    Сақтау
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-6">
+                  <Card className="bg-white border-slate-200">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                      <CheckSquare className="w-5 h-5 text-indigo-600" />
+                      Қадамдық нұсқаулық
+                    </h3>
+                    <div className="space-y-4">
+                      {generatedGuide.steps.map((step, idx) => (
+                        <div key={idx} className="flex gap-4">
+                          <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-sm">
+                            {idx + 1}
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-800 mb-1">{step.stepTitle}</h4>
+                            <p className="text-slate-600 text-sm leading-relaxed">{step.stepDescription}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+
+                  {generatedGuide.templates && generatedGuide.templates.length > 0 && (
+                    <Card className="bg-white border-slate-200">
+                      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-indigo-600" />
+                        Дайын үлгілер (Шаблондар)
+                      </h3>
+                      <div className="space-y-4">
+                        {generatedGuide.templates.map((tpl, idx) => (
+                          <div key={idx} className="relative group">
+                            <pre className="bg-slate-50 p-4 rounded-xl text-sm text-slate-700 whitespace-pre-wrap font-sans border border-slate-100">
+                              {tpl}
+                            </pre>
+                            <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(tpl);
+                                alert('Мәтін көшірілді!');
+                              }}
+                              className="absolute top-2 right-2 p-2 bg-white shadow-sm border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Көшіру"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  )}
+                </div>
+
+                <div className="md:col-span-1 space-y-6">
+                  <Card className="bg-white border-slate-200 sticky top-24">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                      <CheckSquare className="w-5 h-5 text-indigo-600" />
+                      Чек-лист
+                    </h3>
+                    <div className="space-y-3">
+                      {generatedGuide.checklist.map((item, idx) => (
+                        <label key={idx} className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-lg cursor-pointer group">
+                          <input type="checkbox" className="mt-1 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                          <span className="text-sm text-slate-700 group-hover:text-slate-900 leading-snug">{item}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              </div>
             </div>
           )}
 

@@ -62,6 +62,7 @@ export const planStorage = {
       updatedAt: p.updatedAt,
       duration: p.params?.duration || '45',
       target: p.params?.age || 'Не указан',
+      type: p.type || 'lesson',
     }));
   },
 
