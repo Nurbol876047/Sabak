@@ -33,7 +33,7 @@ export async function callGemini(prompt, options) {
   const keys = apiKeyString.split(',').map(k => k.trim()).filter(Boolean);
   const apiKey = keys[Math.floor(Math.random() * keys.length)];
 
-  const model = options.geminiModel || 'gemini-3.6-flash';
+  const model = options.geminiModel || 'gemini-1.5-flash';
   
   const body = {
     contents: [{ parts: [{ text: prompt }] }],

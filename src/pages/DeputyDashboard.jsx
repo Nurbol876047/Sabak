@@ -138,10 +138,10 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
 `;
 
     try {
-      const responseText = await callGemini(prompt, { temperature: 0.7 });
+      const response = await callGemini(prompt, { temperature: 0.7 });
       
       // Попытка выпарсить JSON
-      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      let cleanedText = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
       const firstBrace = cleanedText.indexOf('{');
       const lastBrace = cleanedText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) {
@@ -214,8 +214,8 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
 `;
 
     try {
-      const responseText = await callGemini(prompt, { temperature: 0.7 });
-      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const response = await callGemini(prompt, { temperature: 0.7 });
+      let cleanedText = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
       const firstBrace = cleanedText.indexOf('{');
       const lastBrace = cleanedText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) {
@@ -294,8 +294,8 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
 `;
 
     try {
-      const responseText = await callGemini(prompt, { temperature: 0.7 });
-      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const response = await callGemini(prompt, { temperature: 0.7 });
+      let cleanedText = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
       const firstBrace = cleanedText.indexOf('{');
       const lastBrace = cleanedText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
@@ -392,8 +392,8 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
 `;
 
     try {
-      const responseText = await callGemini(prompt, { temperature: 0.7 });
-      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const response = await callGemini(prompt, { temperature: 0.7 });
+      let cleanedText = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
       const firstBrace = cleanedText.indexOf('{');
       const lastBrace = cleanedText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
