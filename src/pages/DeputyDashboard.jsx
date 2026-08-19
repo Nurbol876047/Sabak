@@ -31,12 +31,38 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
   const [generatedGuide, setGeneratedGuide] = useState(null);
   const [savedGuides, setSavedGuides] = useState([]);
 
+  // Onboarding state
+  const [onboardingForm, setOnboardingForm] = useState({
+    year: '2026-2027',
+    schoolType: 'Жалпы орта білім беретін мектеп',
+    alreadyDone: ''
+  });
+  const [activeChecklist, setActiveChecklist] = useState(null);
+  const [isOnboardingGenerating, setIsOnboardingGenerating] = useState(false);
+  const [onboardingError, setOnboardingError] = useState(null);
+
   useEffect(() => {
     if (activeTab === 'materials') {
       const plans = planStorage.listPlans();
       setSavedGuides(plans.filter(p => p.type === 'methodicalGuide'));
     }
+    if (activeTab === 'onboarding') {
+      loadOnboardingChecklist();
+    }
   }, [activeTab]);
+
+  const loadOnboardingChecklist = () => {
+    const plans = planStorage.listPlans();
+    const onboardingPlan = plans.find(p => p.type === 'onboardingChecklist');
+    if (onboardingPlan) {
+      const planData = planStorage.getPlan(onboardingPlan.id);
+      if (planData && planData.checklistData) {
+        setActiveChecklist({ ...planData.checklistData, id: planData.id });
+      }
+    } else {
+      setActiveChecklist(null);
+    }
+  };
 
   const handleCheckbox = (group) => {
     setFormData(prev => ({
@@ -208,6 +234,100 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
     setGuideTopic('');
   };
 
+  const handleGenerateOnboarding = async () => {
+    if (activeChecklist && !window.confirm('Жаңа чек-лист құру алдыңғы сақталған прогрессті жояды. Жалғастырамыз ба?')) {
+      return;
+    }
+
+    setIsOnboardingGenerating(true);
+    setOnboardingError(null);
+
+    const prompt = `
+Ты опытный методист. Составь структурированный чек-лист "С чего начать учебный год" для нового завуча по воспитательной работе (тәрбие ісі жөніндегі орынбасары).
+Оқу жылы: ${onboardingForm.year}
+Мектеп түрі: ${onboardingForm.schoolType}
+Уже сделано (не предлагай это): ${onboardingForm.alreadyDone || 'Нет информации'}
+
+Требования:
+1. Обязательные документы на начало года.
+2. Обязательные мероприятия/планерки.
+3. Организационные шаги (работа с классными руководителями).
+4. Раздел с частыми ошибками новых завучей (на что обратить внимание).
+
+ОТВЕЧАЙ ТОЛЬКО В ФОРМАТЕ JSON, БЕЗ MARKDOWN!
+Текст на КАЗАХСКОМ ЯЗЫКЕ.
+
+Формат JSON:
+{
+  "checklist": [
+    {
+      "id": "уникальная_строка",
+      "category": "Название категории (например, Құжаттар)",
+      "title": "Название задачи",
+      "description": "Краткое пояснение",
+      "deadline": "Дедлайн или null",
+      "done": false
+    }
+  ],
+  "commonMistakes": [
+    "Ошибка 1",
+    "Ошибка 2"
+  ]
+}
+`;
+
+    try {
+      const responseText = await callGemini(prompt, { temperature: 0.7 });
+      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const firstBrace = cleanedText.indexOf('{');
+      const lastBrace = cleanedText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
+      
+      const data = JSON.parse(cleanedText);
+      if (data && data.checklist) {
+        // Удаляем старый чек-лист, если был
+        if (activeChecklist && activeChecklist.id) {
+          planStorage.deletePlan(activeChecklist.id);
+        }
+        
+        // Сохраняем новый
+        const savedId = planStorage.savePlan({
+          title: 'Жаңа маманға арналған чек-лист',
+          type: 'onboardingChecklist',
+          checklistData: data,
+          params: { duration: '-', age: 'Орынбасар' }
+        });
+        
+        setActiveChecklist({ ...data, id: savedId });
+      } else {
+        throw new Error("Invalid JSON");
+      }
+    } catch (err) {
+      console.error(err);
+      setOnboardingError('Чек-лист құру кезінде қате пайда болды. Қайталап көріңіз.');
+    } finally {
+      setIsOnboardingGenerating(false);
+    }
+  };
+
+  const toggleChecklistItem = (itemId) => {
+    if (!activeChecklist) return;
+    const updatedChecklist = activeChecklist.checklist.map(item => 
+      item.id === itemId ? { ...item, done: !item.done } : item
+    );
+    const updatedData = { ...activeChecklist, checklist: updatedChecklist };
+    setActiveChecklist(updatedData);
+    
+    // Сохраняем прогресс
+    planStorage.savePlan({
+      id: updatedData.id,
+      title: 'Жаңа маманға арналған чек-лист',
+      type: 'onboardingChecklist',
+      checklistData: updatedData,
+      params: { duration: '-', age: 'Орынбасар' }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
@@ -273,7 +393,7 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
         </aside>
 
         <section className="flex-1">
-          {activeTab !== 'annual_plan' && activeTab !== 'materials' && (
+          {activeTab !== 'annual_plan' && activeTab !== 'materials' && activeTab !== 'onboarding' && (
             <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-2xl border border-slate-200 border-dashed">
               <div className="p-4 bg-indigo-50 rounded-full mb-4">
                 <FileText className="w-8 h-8 text-indigo-400" />
@@ -453,6 +573,174 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
                       ))}
                     </div>
                   </Card>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ONBOARDING TAB */}
+          {activeTab === 'onboarding' && !activeChecklist && (
+            <Card className="max-w-2xl bg-white shadow-sm border-slate-200">
+              <h2 className="text-2xl font-bold text-slate-800 mb-6">Жаңа маманға арналған чек-лист</h2>
+              <p className="text-slate-600 mb-6">Бұл чек-лист жаңадан тағайындалған тәрбие ісі жөніндегі орынбасарына оқу жылын дұрыс бастауға көмектеседі.</p>
+              
+              <div className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Оқу жылы</label>
+                    <input 
+                      type="text" 
+                      value={onboardingForm.year}
+                      onChange={(e) => setOnboardingForm({...onboardingForm, year: e.target.value})}
+                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Мектеп түрі</label>
+                    <select 
+                      value={onboardingForm.schoolType}
+                      onChange={(e) => setOnboardingForm({...onboardingForm, schoolType: e.target.value})}
+                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>Жалпы орта білім беретін мектеп</option>
+                      <option>Гимназия</option>
+                      <option>Лицей</option>
+                      <option>Ауыл мектебі / Шағын жинақты мектеп</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Қандай жұмыстар жасалды? (міндетті емес)</label>
+                  <textarea 
+                    value={onboardingForm.alreadyDone}
+                    onChange={(e) => setOnboardingForm({...onboardingForm, alreadyDone: e.target.value})}
+                    placeholder="Мысалы: Жоспар бекітілді, бірақ сынып жетекшілерімен жиналыс өткен жоқ..."
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none h-24"
+                  />
+                </div>
+
+                {onboardingError && (
+                  <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm">
+                    {onboardingError}
+                  </div>
+                )}
+
+                <Button 
+                  onClick={handleGenerateOnboarding} 
+                  disabled={isOnboardingGenerating}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 py-3 text-lg"
+                >
+                  {isOnboardingGenerating ? (
+                    <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Чек-лист құрылуда...</>
+                  ) : (
+                    'Чек-листі құру'
+                  )}
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {activeTab === 'onboarding' && activeChecklist && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <CheckSquare className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-1 leading-tight">Бастапқы чек-лист</h2>
+                    <p className="text-slate-600">
+                      Жаңадан тағайындалған орынбасарға арналған қадамдар
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Button variant="outline" onClick={handleGenerateOnboarding} disabled={isOnboardingGenerating}>
+                    {isOnboardingGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Жаңарту'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-6">
+                  {/* Group checklist by category */}
+                  {Array.from(new Set(activeChecklist.checklist.map(item => item.category))).map((category, cIdx) => {
+                    const itemsInCategory = activeChecklist.checklist.filter(i => i.category === category);
+                    const completedCount = itemsInCategory.filter(i => i.done).length;
+                    const progress = Math.round((completedCount / itemsInCategory.length) * 100);
+
+                    return (
+                      <Card key={cIdx} className="bg-white border-slate-200">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-bold text-slate-800">{category}</h3>
+                          <span className="text-sm font-medium text-slate-500">{completedCount} / {itemsInCategory.length}</span>
+                        </div>
+                        
+                        <div className="w-full bg-slate-100 rounded-full h-2 mb-6">
+                          <div className="bg-indigo-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+                        </div>
+
+                        <div className="space-y-3">
+                          {itemsInCategory.map(item => (
+                            <div 
+                              key={item.id} 
+                              className={`flex items-start gap-4 p-4 rounded-xl border transition-colors ${item.done ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-200 hover:border-indigo-300'}`}
+                            >
+                              <div className="pt-1">
+                                <label className="relative flex cursor-pointer items-center rounded-full p-1" htmlFor={`checkbox-${item.id}`}>
+                                  <input 
+                                    type="checkbox" 
+                                    className="before:content[''] peer relative h-6 w-6 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-indigo-500 before:opacity-0 before:transition-opacity checked:border-indigo-600 checked:bg-indigo-600 checked:before:bg-indigo-600 hover:before:opacity-10" 
+                                    id={`checkbox-${item.id}`} 
+                                    checked={item.done}
+                                    onChange={() => toggleChecklistItem(item.id)}
+                                  />
+                                  <div className="pointer-events-none absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 text-white opacity-0 transition-opacity peer-checked:opacity-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" strokeWidth="1">
+                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                                    </svg>
+                                  </div>
+                                </label>
+                              </div>
+                              <div className="flex-1">
+                                <h4 className={`font-semibold mb-1 transition-colors ${item.done ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
+                                  {item.title}
+                                </h4>
+                                <p className={`text-sm transition-colors ${item.done ? 'text-slate-400' : 'text-slate-600'}`}>
+                                  {item.description}
+                                </p>
+                                {item.deadline && (
+                                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium bg-rose-50 text-rose-600">
+                                    <Calendar className="w-3 h-3" /> {item.deadline}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+
+                <div className="md:col-span-1 space-y-6">
+                  {activeChecklist.commonMistakes && activeChecklist.commonMistakes.length > 0 && (
+                    <Card className="bg-rose-50 border-rose-100 sticky top-24">
+                      <h3 className="text-lg font-bold text-rose-800 mb-4 flex items-center gap-2">
+                        <X className="w-5 h-5" />
+                        Жиі кездесетін қателіктер
+                      </h3>
+                      <ul className="space-y-3">
+                        {activeChecklist.commonMistakes.map((mistake, idx) => (
+                          <li key={idx} className="flex gap-2 text-sm text-rose-700">
+                            <span className="font-bold shrink-0">•</span>
+                            <span className="leading-snug">{mistake}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Card>
+                  )}
                 </div>
               </div>
             </div>
