@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Briefcase, FileText, CheckSquare, Users, Loader2, Download, Plus, Trash2, Edit2, Check, X, Calendar, Copy, ChevronRight, Save } from 'lucide-react';
+import { Briefcase, FileText, CheckSquare, Users, Loader2, Download, Plus, Trash2, Edit2, Check, X, Calendar, Copy, ChevronRight, ChevronLeft, Save } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { callGemini } from '../api/aiClient';
@@ -41,6 +41,19 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
   const [isOnboardingGenerating, setIsOnboardingGenerating] = useState(false);
   const [onboardingError, setOnboardingError] = useState(null);
 
+  // Pedsovet state
+  const [pedsovetForm, setPedsovetForm] = useState({
+    topic: '',
+    audience: 'Барлық сынып жетекшілері',
+    duration: '30 минут'
+  });
+  const [isGeneratingPedsovet, setIsGeneratingPedsovet] = useState(false);
+  const [pedsovetError, setPedsovetError] = useState(null);
+  const [generatedPedsovet, setGeneratedPedsovet] = useState(null);
+  const [savedPedsovets, setSavedPedsovets] = useState([]);
+  const [pedsovetView, setPedsovetView] = useState('presentation'); // 'presentation' or 'guide'
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   useEffect(() => {
     if (activeTab === 'materials') {
       const plans = planStorage.listPlans();
@@ -48,6 +61,10 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
     }
     if (activeTab === 'onboarding') {
       loadOnboardingChecklist();
+    }
+    if (activeTab === 'pedsovet') {
+      const plans = planStorage.listPlans();
+      setSavedPedsovets(plans.filter(p => p.type === 'staffMeetingMaterial'));
     }
   }, [activeTab]);
 
@@ -328,6 +345,88 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
     });
   };
 
+  const PEDSOVET_TOPICS = [
+    "Қиын балалармен жұмыс",
+    "Буллингтің алдын алу",
+    "Ата-аналармен қарым-қатынас",
+    "Тәрбие жұмысының жоспарын құру"
+  ];
+
+  const handleGeneratePedsovet = async (topicToGenerate) => {
+    const topic = topicToGenerate || pedsovetForm.topic;
+    if (!topic.trim()) {
+      alert("Тақырыпты енгізіңіз немесе тізімнен таңдаңыз!");
+      return;
+    }
+
+    setIsGeneratingPedsovet(true);
+    setPedsovetError(null);
+    setPedsovetForm(prev => ({ ...prev, topic }));
+    setCurrentSlide(0);
+    setPedsovetView('presentation');
+
+    const prompt = `
+Ты опытный методист. Помоги завучу по воспитательной работе подготовить выступление перед классными руководителями.
+Тема: "${topic}"
+Аудитория: ${pedsovetForm.audience}
+Длительность: ${pedsovetForm.duration}
+
+ОТВЕЧАЙ ТОЛЬКО В ФОРМАТЕ JSON, БЕЗ MARKDOWN! Текст на КАЗАХСКОМ ЯЗЫКЕ.
+
+Формат JSON:
+{
+  "title": "Название выступления",
+  "presentation": [
+    {
+      "slideTitle": "Заголовок слайда",
+      "content": ["Тезис 1", "Тезис 2"],
+      "speakerNote": "Слова спикера на этом слайде"
+    }
+  ],
+  "guide": {
+    "keyMessages": ["Главный тезис 1", "Главный тезис 2"],
+    "discussionQuestions": ["Вопрос к аудитории 1", "Вопрос 2"],
+    "handoutSummary": "Готовый текст памятки для раздачи учителям"
+  }
+}
+`;
+
+    try {
+      const responseText = await callGemini(prompt, { temperature: 0.7 });
+      let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const firstBrace = cleanedText.indexOf('{');
+      const lastBrace = cleanedText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
+      
+      const data = JSON.parse(cleanedText);
+      if (data && data.presentation && data.guide) {
+        setGeneratedPedsovet(data);
+      } else {
+        throw new Error("Invalid JSON structure");
+      }
+    } catch (err) {
+      console.error(err);
+      setPedsovetError('Материалдарды құру кезінде қате пайда болды. Қайталап көріңіз.');
+    } finally {
+      setIsGeneratingPedsovet(false);
+    }
+  };
+
+  const handleSavePedsovet = () => {
+    if (!generatedPedsovet) return;
+    planStorage.savePlan({
+      title: generatedPedsovet.title,
+      type: 'staffMeetingMaterial',
+      guide: generatedPedsovet,
+      params: { duration: pedsovetForm.duration, age: pedsovetForm.audience }
+    });
+    alert("Материалдар сақталды!");
+    const plans = planStorage.listPlans();
+    setSavedPedsovets(plans.filter(p => p.type === 'staffMeetingMaterial'));
+    setGeneratedPedsovet(null);
+    setPedsovetForm(prev => ({ ...prev, topic: '' }));
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
@@ -393,13 +492,296 @@ export const DeputyDashboard = ({ onSwitchRole }) => {
         </aside>
 
         <section className="flex-1">
-          {activeTab !== 'annual_plan' && activeTab !== 'materials' && activeTab !== 'onboarding' && (
+          {activeTab !== 'annual_plan' && activeTab !== 'materials' && activeTab !== 'onboarding' && activeTab !== 'pedsovet' && (
             <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-2xl border border-slate-200 border-dashed">
               <div className="p-4 bg-indigo-50 rounded-full mb-4">
                 <FileText className="w-8 h-8 text-indigo-400" />
               </div>
               <h2 className="text-xl font-bold text-slate-800 mb-2">Бұл бөлім жақын арада іске қосылады</h2>
               <p className="text-slate-500 max-w-md">Біз осы функцияның үстінде жұмыс істеп жатырмыз. Жаңа жаңартуларды күтіңіз!</p>
+            </div>
+          )}
+
+          {/* PEDSOVET TAB */}
+          {activeTab === 'pedsovet' && !generatedPedsovet && (
+            <div className="space-y-6">
+              <Card className="bg-white shadow-sm border-slate-200">
+                <h2 className="text-2xl font-bold text-slate-800 mb-6">Педкеңеске / семинарға материалдар</h2>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-3">Дайын тақырыптар</label>
+                    <div className="flex flex-wrap gap-2">
+                      {PEDSOVET_TOPICS.map((topic, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleGeneratePedsovet(topic)}
+                          className="px-4 py-2 bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 rounded-full text-sm font-medium transition-colors text-left"
+                        >
+                          {topic}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div className="w-full border-t border-slate-200" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-3 bg-white text-sm text-slate-400">немесе</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Өз тақырыбыңызды енгізіңіз</label>
+                    <input 
+                      type="text" 
+                      value={pedsovetForm.topic}
+                      onChange={(e) => setPedsovetForm({...pedsovetForm, topic: e.target.value})}
+                      placeholder="Мысалы: Оқушылардың сабаққа қатысуын бақылау..."
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Аудитория</label>
+                      <select 
+                        value={pedsovetForm.audience}
+                        onChange={(e) => setPedsovetForm({...pedsovetForm, audience: e.target.value})}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        <option>Барлық сынып жетекшілері</option>
+                        <option>Бастауыш сынып жетекшілері (1-4)</option>
+                        <option>Орта буын сынып жетекшілері (5-9)</option>
+                        <option>Жоғары сынып жетекшілері (10-11)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Ұзақтығы</label>
+                      <select 
+                        value={pedsovetForm.duration}
+                        onChange={(e) => setPedsovetForm({...pedsovetForm, duration: e.target.value})}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        <option>15 минут</option>
+                        <option>30 минут</option>
+                        <option>45 минут</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {pedsovetError && (
+                    <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm">
+                      {pedsovetError}
+                    </div>
+                  )}
+
+                  <Button 
+                    onClick={() => handleGeneratePedsovet()} 
+                    disabled={isGeneratingPedsovet}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 py-3 text-lg"
+                  >
+                    {isGeneratingPedsovet ? (
+                      <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Материалдар құрылуда...</>
+                    ) : (
+                      'Материалдарды құру'
+                    )}
+                  </Button>
+                </div>
+              </Card>
+
+              {savedPedsovets.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">Сақталған материалдар</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {savedPedsovets.map(pedsovet => (
+                      <Card key={pedsovet.id} className="p-4 hover:border-indigo-300 transition-colors cursor-pointer" onClick={() => {
+                        const plan = planStorage.getPlan(pedsovet.id);
+                        if (plan && plan.guide) {
+                          setGeneratedPedsovet(plan.guide);
+                          setCurrentSlide(0);
+                          setPedsovetView('presentation');
+                        }
+                      }}>
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 shrink-0">
+                            <Briefcase className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{pedsovet.title}</h4>
+                            <p className="text-xs text-slate-500">{new Date(pedsovet.createdAt).toLocaleDateString()} • {pedsovet.params?.duration}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'pedsovet' && generatedPedsovet && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+                    <Briefcase className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-1 leading-tight">{generatedPedsovet.title}</h2>
+                    <p className="text-slate-600">Педкеңес материалдары</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Button variant="outline" onClick={() => setGeneratedPedsovet(null)}>
+                    Артқа
+                  </Button>
+                  <Button onClick={handleSavePedsovet} className="bg-indigo-600 hover:bg-indigo-700 text-white" icon={<Save className="w-4 h-4" />}>
+                    Сақтау
+                  </Button>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                <div className="flex border-b border-slate-200 bg-slate-50">
+                  <button 
+                    onClick={() => setPedsovetView('presentation')}
+                    className={`flex-1 py-4 text-center font-medium transition-colors ${pedsovetView === 'presentation' ? 'bg-white border-b-2 border-indigo-600 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+                  >
+                    Презентация
+                  </button>
+                  <button 
+                    onClick={() => setPedsovetView('guide')}
+                    className={`flex-1 py-4 text-center font-medium transition-colors ${pedsovetView === 'guide' ? 'bg-white border-b-2 border-indigo-600 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+                  >
+                    Спикерге нұсқаулық
+                  </button>
+                </div>
+
+                <div className="p-6">
+                  {pedsovetView === 'presentation' && (
+                    <div className="max-w-4xl mx-auto space-y-6">
+                      <div className="aspect-video bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-slate-200 flex flex-col items-center justify-center p-12 text-center shadow-inner relative overflow-hidden">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-8 max-w-2xl leading-tight">
+                          {generatedPedsovet.presentation[currentSlide].slideTitle}
+                        </h2>
+                        
+                        {generatedPedsovet.presentation[currentSlide].content && generatedPedsovet.presentation[currentSlide].content.length > 0 && (
+                          <ul className="text-left space-y-4 w-full max-w-2xl mx-auto">
+                            {generatedPedsovet.presentation[currentSlide].content.map((point, idx) => (
+                              <li key={idx} className="flex items-start gap-4 text-lg sm:text-xl text-slate-700">
+                                <div className="mt-1.5 p-1 bg-indigo-100 rounded-full text-indigo-600 flex-shrink-0">
+                                  <ChevronRight className="w-4 h-4" />
+                                </div>
+                                <span>{point}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        
+                        <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-slate-500 border border-slate-200">
+                          {currentSlide + 1} / {generatedPedsovet.presentation.length}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setCurrentSlide(prev => Math.max(0, prev - 1))}
+                          disabled={currentSlide === 0}
+                          icon={<ChevronLeft className="w-5 h-5" />}
+                        >
+                          Алдыңғы
+                        </Button>
+                        <div className="text-sm font-medium text-slate-500">
+                          Слайд {currentSlide + 1} / {generatedPedsovet.presentation.length}
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setCurrentSlide(prev => Math.min(generatedPedsovet.presentation.length - 1, prev + 1))}
+                          disabled={currentSlide === generatedPedsovet.presentation.length - 1}
+                        >
+                          Келесі <ChevronRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      </div>
+
+                      <Card className="bg-amber-50 border-amber-200 mt-6">
+                        <div className="flex gap-4">
+                          <div className="p-2 bg-amber-100 text-amber-600 rounded-lg h-fit">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-amber-800 mb-2">Спикер сөзі:</h3>
+                            <p className="text-amber-900 leading-relaxed text-lg">
+                              {generatedPedsovet.presentation[currentSlide].speakerNote}
+                            </p>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  )}
+
+                  {pedsovetView === 'guide' && (
+                    <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+                      <div className="space-y-8">
+                        <section>
+                          <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <CheckSquare className="w-6 h-6 text-indigo-600" />
+                            Негізгі тезистер
+                          </h3>
+                          <ul className="space-y-4">
+                            {generatedPedsovet.guide.keyMessages.map((msg, idx) => (
+                              <li key={idx} className="flex gap-3 text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span className="font-bold text-indigo-600">{idx + 1}.</span>
+                                <span className="leading-relaxed">{msg}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+
+                        <section>
+                          <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <Users className="w-6 h-6 text-indigo-600" />
+                            Талқылауға арналған сұрақтар
+                          </h3>
+                          <ul className="space-y-3">
+                            {generatedPedsovet.guide.discussionQuestions.map((q, idx) => (
+                              <li key={idx} className="flex gap-2 text-slate-700">
+                                <span className="text-indigo-600 font-bold">•</span>
+                                {q}
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                          <FileText className="w-6 h-6 text-indigo-600" />
+                          Үлестірмелі материал (Памятка)
+                        </h3>
+                        <Card className="bg-white border-slate-200 relative group overflow-hidden">
+                          <pre className="whitespace-pre-wrap font-sans text-slate-700 text-sm leading-relaxed">
+                            {generatedPedsovet.guide.handoutSummary}
+                          </pre>
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(generatedPedsovet.guide.handoutSummary);
+                              alert('Памятка мәтіні көшірілді!');
+                            }}
+                            className="absolute top-4 right-4 p-2 bg-indigo-50 shadow-sm border border-indigo-100 rounded-lg text-indigo-600 hover:bg-indigo-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Көшіру"
+                          >
+                            <Copy className="w-5 h-5" />
+                          </button>
+                        </Card>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
