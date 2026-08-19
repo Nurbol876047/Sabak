@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Briefcase, Plus, Clock, Users, Calendar, Trash2 } from 'lucide-react';
+import { Briefcase, Plus, Clock, Users, Calendar, Trash2, Hexagon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Modal } from '../components/ui/Modal';
 import { planStorage } from '../utils/planStorage';
+import { Neon3DBackground } from '../components/ui/Neon3DBackground';
 
 const TOPIC_CATEGORIES = [
   {
@@ -74,35 +76,36 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
   const isEmpty = plans.length === 0;
 
   return (
-    <div className="min-h-screen bg-paper-light p-6 md:p-10">
-      <div className="max-w-6xl mx-auto">
+    <div className="relative min-h-screen text-slate-200 overflow-hidden">
+      <Neon3DBackground />
+      <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2 flex items-center gap-3">
-              <Briefcase className="text-brand-500 w-8 h-8" />
-              Менің чемоданым
+            <h1 className="text-4xl font-bold neon-text mb-2 flex items-center gap-4">
+              <Hexagon className="text-brand-500 w-10 h-10 animate-[spin_10s_linear_infinite]" />
+              Менің жүйем
             </h1>
-            <p className="text-slate-500">Тәрбие сағаттарыңыздың кітапханасы</p>
+            <p className="text-slate-400">Тәрбие сағаттарыңыздың кибер-кітапханасы</p>
           </div>
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
-            <div className="bg-slate-100 p-1 rounded-xl flex items-center shadow-inner">
+            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)]">
               <button 
-                className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-brand-700 shadow-sm"
+                className="px-4 py-2 text-sm font-bold rounded-lg neon-bg"
               >
                 Мұғалім
               </button>
               <button 
                 onClick={() => onSwitchRole('deputy')}
-                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition-all"
+                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-brand-500 transition-all"
               >
                 Орынбасар
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="secondary" onClick={() => setIsVideoModalOpen(true)} icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>}>
+              <Button variant="outline" onClick={() => setIsVideoModalOpen(true)} icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>}>
                 Видео
               </Button>
-              <Button variant="primary" onClick={onNewPlan} icon={<Plus className="w-5 h-5" />}>
+              <Button variant="magic" onClick={onNewPlan} icon={<Plus className="w-5 h-5" />}>
                 Жаңа жоспар
               </Button>
             </div>
@@ -110,16 +113,16 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
         </header>
 
         {isEmpty ? (
-          <div className="flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-200 border-dashed p-16 text-center">
-            <div className="bg-brand-50 p-6 rounded-full mb-6">
-              <Briefcase className="w-12 h-12 text-brand-300" />
+          <div className="flex flex-col items-center justify-center glass-card border-brand-500/50 p-16 text-center neon-border">
+            <div className="bg-brand-500/20 p-6 rounded-full mb-6 border border-brand-500/40 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+              <Hexagon className="w-16 h-16 text-brand-500" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-2">Сіздің чемоданыңыз әзірге бос</h3>
-            <p className="text-slate-500 max-w-md mb-8">
-              Алғашқы интерактивті тәрбие сағатын 5 минутта жасаңыз. Біздің нейрожеліміз идеялар мен материалдарға көмектеседі.
+            <h3 className="text-2xl font-bold neon-text mb-4">Жүйе қоймасы бос</h3>
+            <p className="text-slate-300 max-w-md mb-8 text-lg">
+              Алғашқы интерактивті модульді жасаңыз. Біздің нейрожелі сізге барлық қажеттілікті генерациялайды.
             </p>
             <Button variant="magic" onClick={onNewPlan}>
-              Алғашқы чемоданды жинау
+              Жүйені іске қосу
             </Button>
           </div>
         ) : (
@@ -128,21 +131,21 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
               <Card key={item.id} hover onClick={() => onOpenPlan(item.id)}>
                 <div className="flex flex-col h-full">
                   <div className="flex items-start justify-between mb-4">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600">
+                    <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-bold bg-brand-500/20 text-brand-500 border border-brand-500/30 shadow-[0_0_8px_rgba(255,255,255,0.2)]">
                       {item.target}
                     </span>
                     <button 
-                      className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                      className="text-slate-500 hover:text-red-500 hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] transition-all p-1"
                       onClick={(e) => handleDelete(e, item.id)}
                       title="Жоспарды жою"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3 flex-1 leading-snug">
+                  <h3 className="text-lg font-bold text-slate-100 mb-3 flex-1 leading-snug group-hover:text-brand-500 transition-colors">
                     {item.title}
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-slate-500 mt-4 pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-4 text-sm text-brand-500 mt-4 pt-4 border-t border-brand-500/20">
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-4 h-4" /> {item.duration} мин
                     </div>
@@ -157,27 +160,29 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
           </div>
         )}
 
-        <div className="mt-12 space-y-10">
+        <div className="mt-16 space-y-10 relative z-10">
           <div>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">Жылдам бастау</h2>
-            <p className="text-slate-500 mb-6">Сыныбыңызға сәйкес келетін тақырыпты таңдаңыз</p>
+            <h2 className="text-3xl font-bold neon-text mb-3">Жылдам іске қосу</h2>
+            <p className="text-slate-400 text-lg mb-6">Сыныпқа сәйкес келетін бағдарламаны таңдаңыз</p>
           </div>
           
           {TOPIC_CATEGORIES.map((cat, cIdx) => (
-            <div key={cIdx}>
-              <h3 className="text-lg font-bold text-brand-700 mb-4">{cat.title}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div key={cIdx} className="mb-8">
+              <h3 className="text-xl font-bold text-brand-400 mb-5 pl-3 border-l-4 border-brand-500">{cat.title}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {cat.topics.map((topic, tIdx) => (
-                  <button 
+                  <motion.button 
                     key={tIdx}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => onNewPlan(topic)}
-                    className="text-left bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:border-brand-300 hover:shadow-md transition-all group"
+                    className="text-left bg-paper/60 backdrop-blur-md p-5 rounded-2xl border border-brand-500/30 hover:border-brand-500 hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all group"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="font-medium text-slate-700 group-hover:text-brand-600 transition-colors leading-snug">{topic}</span>
-                      <Plus className="w-5 h-5 text-slate-400 group-hover:text-brand-500 transition-colors flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="font-medium text-slate-300 group-hover:text-brand-500 transition-colors leading-snug">{topic}</span>
+                      <Plus className="w-5 h-5 text-brand-700 group-hover:text-brand-500 transition-colors flex-shrink-0 mt-0.5" />
                     </div>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -188,22 +193,22 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
       <Modal 
         isOpen={isVideoModalOpen} 
         onClose={() => setIsVideoModalOpen(false)}
-        title="Видео"
+        title="Видео Нұсқаулық"
       >
         <div className="space-y-6">
-          <p className="text-slate-600">Платформамен жұмыс істеу бойынша қысқаша бейненұсқаулықтармен танысыңыз.</p>
+          <p className="text-slate-300">Жүйемен жұмыс істеу бойынша қысқаша бейненұсқаулықтармен танысыңыз.</p>
           <div className="flex flex-col gap-6">
-            <div className="bg-slate-50 rounded-2xl p-2 border border-slate-200">
-              <h4 className="font-semibold text-slate-800 px-2 pb-2 pt-1">1. Жоспарды қалай құру керек</h4>
-              <video src="/videos/1.mp4" controls className="w-full rounded-xl shadow-sm bg-black aspect-video" />
+            <div className="bg-paper-dark/50 rounded-2xl p-2 border border-brand-500/20">
+              <h4 className="font-semibold text-brand-400 px-2 pb-2 pt-1">1. Жоспарды қалай құру керек</h4>
+              <video src="/videos/1.mp4" controls className="w-full rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-black aspect-video border border-brand-500/10" />
             </div>
-            <div className="bg-slate-50 rounded-2xl p-2 border border-slate-200">
-              <h4 className="font-semibold text-slate-800 px-2 pb-2 pt-1">2. Чемоданмен жұмыс</h4>
-              <video src="/videos/2.mp4" controls className="w-full rounded-xl shadow-sm bg-black aspect-video" />
+            <div className="bg-paper-dark/50 rounded-2xl p-2 border border-brand-500/20">
+              <h4 className="font-semibold text-brand-400 px-2 pb-2 pt-1">2. Жүйемен жұмыс</h4>
+              <video src="/videos/2.mp4" controls className="w-full rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-black aspect-video border border-brand-500/10" />
             </div>
-            <div className="bg-slate-50 rounded-2xl p-2 border border-slate-200">
-              <h4 className="font-semibold text-slate-800 px-2 pb-2 pt-1">3. Бейімдеу және жақсарту</h4>
-              <video src="/videos/3.mp4" controls className="w-full rounded-xl shadow-sm bg-black aspect-video" />
+            <div className="bg-paper-dark/50 rounded-2xl p-2 border border-brand-500/20">
+              <h4 className="font-semibold text-brand-400 px-2 pb-2 pt-1">3. Бейімдеу және жақсарту</h4>
+              <video src="/videos/3.mp4" controls className="w-full rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-black aspect-video border border-brand-500/10" />
             </div>
           </div>
         </div>

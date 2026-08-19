@@ -8,21 +8,21 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#fdf8f6',
-          100: '#f2e8e5',
-          200: '#eaddd7',
-          300: '#e0cec7',
-          400: '#d2bab0',
-          500: '#a36b56', // Base accent (warm earthy terracotta/leather suitcase vibe)
-          600: '#8c5946',
-          700: '#6f4535',
-          800: '#533225',
-          900: '#382017',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#ffffff', // Neon White Base
+          600: '#cbd5e1',
+          700: '#94a3b8',
+          800: '#64748b',
+          900: '#475569',
         },
         paper: {
-          light: '#fcfbf9',
-          DEFAULT: '#f4f1ea',
-          dark: '#e6dfd1'
+          light: '#0f172a', // Deep Slate / Navy
+          DEFAULT: '#1e293b',
+          dark: '#334155'
         }
       },
       boxShadow: {
