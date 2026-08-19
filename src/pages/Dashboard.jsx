@@ -88,17 +88,29 @@ export const Dashboard = ({ onNewPlan, onOpenPlan, onSwitchRole }) => {
             <p className="text-slate-400">Тәрбие сағаттарыңыздың кибер-кітапханасы</p>
           </div>
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
-            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+            <div className="bg-paper/80 backdrop-blur-md p-1 rounded-xl flex items-center border border-brand-500/30 shadow-[0_0_15px_rgba(255,255,255,0.15)] overflow-x-auto">
               <button 
-                className="px-4 py-2 text-sm font-bold rounded-lg neon-bg"
+                className="px-4 py-2 text-sm font-bold rounded-lg neon-bg whitespace-nowrap"
               >
                 Мұғалім
               </button>
               <button 
                 onClick={() => onSwitchRole('deputy')}
-                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-brand-500 transition-all"
+                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-brand-500 transition-all whitespace-nowrap"
               >
                 Орынбасар
+              </button>
+              <button 
+                onClick={() => onSwitchRole('deputy_briefcase')}
+                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-brand-500 transition-all whitespace-nowrap"
+              >
+                Тәрбие орынбасарының қойын сөмкесі
+              </button>
+              <button 
+                onClick={() => onSwitchRole('mood')}
+                className="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-brand-500 transition-all whitespace-nowrap"
+              >
+                Көңіл күй
               </button>
             </div>
             <div className="flex items-center gap-3">

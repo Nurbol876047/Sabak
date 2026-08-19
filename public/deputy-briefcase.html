@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADAL AZAMAT — Тәрбие мониторингі</title>
+<style>
+:root{
+  --ivory:#f7f1e5;
+  --cream:#fffaf0;
+  --ink:#18313b;
+  --teal:#0a6a6b;
+  --teal2:#0d8b87;
+  --navy:#07355d;
+  --gold:#e4b44f;
+  --gold2:#ffe59c;
+  --green:#2e8b35;
+  --red:#df4338;
+  --violet:#6e2c72;
+  --orange:#d78b13;
+  --card:rgba(255,252,245,.93);
+  --line:rgba(130,98,35,.22);
+  --shadow:0 14px 40px rgba(39,49,47,.18);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.18)),
+    radial-gradient(circle at 50% -10%,rgba(255,255,255,.95),transparent 40%),
+    linear-gradient(180deg,#cfe7f7 0%,#eef3ea 38%,#e7dfc6 72%,#d7ccb0 100%);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    linear-gradient(to bottom,rgba(255,255,255,.16),rgba(255,255,255,0) 30%),
+    radial-gradient(circle at 15% 80%,rgba(255,255,255,.8),transparent 20%),
+    radial-gradient(circle at 85% 75%,rgba(255,255,255,.72),transparent 20%);
+}
+body:after{
+  content:"";
+  position:fixed; inset:auto 0 0 0; height:28px; z-index:50;
+  background:
+    repeating-linear-gradient(90deg,#0a6b6e 0 18px,#d9a83d 18px 24px,#0a6b6e 24px 42px);
+  box-shadow:0 -2px 0 rgba(255,231,163,.85),0 -8px 18px rgba(20,66,66,.18);
+}
+
+/* ornamental corners */
+.kazakh-corner{
+  position:fixed; width:120px; height:120px; z-index:60; pointer-events:none; opacity:.85;
+  filter:drop-shadow(0 0 8px rgba(226,175,65,.25));
+}
+.kazakh-corner:before,.kazakh-corner:after{
+  content:""; position:absolute; border:4px solid var(--gold); border-radius:24px 4px 24px 4px;
+}
+.kazakh-corner:before{width:92px;height:28px}
+.kazakh-corner:after{width:28px;height:92px}
+.kazakh-corner.tl{left:8px;top:6px}
+.kazakh-corner.tr{right:8px;top:6px;transform:scaleX(-1)}
+.kazakh-corner.tl:before,.kazakh-corner.tr:before{left:0;top:0}
+.kazakh-corner.tl:after,.kazakh-corner.tr:after{left:0;top:0}
+
+.wrap{max-width:1460px;margin:auto;padding:18px 22px 58px}
+header{
+  position:sticky;top:0;z-index:40;
+  background:rgba(240,247,246,.70);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(228,180,79,.35);
+  box-shadow:0 8px 25px rgba(34,61,61,.08);
+}
+.nav{
+  max-width:1460px;margin:auto;padding:12px 24px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.brand{
+  margin-right:auto;display:flex;align-items:center;gap:12px;
+  font-weight:950;letter-spacing:.5px;color:#81621a;font-size:19px;
+}
+.brand-badge{
+  width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;
+  color:#b9871d;font-size:26px;
+  border:2px solid rgba(222,173,65,.7);
+  box-shadow:0 0 20px rgba(232,188,87,.28),inset 0 0 18px rgba(255,255,255,.7);
+  background:rgba(255,253,244,.72);
+}
+.navtile{
+  position:relative; min-width:185px; min-height:78px;
+  border:1px solid rgba(255,221,128,.8);
+  border-radius:24px;
+  padding:10px 18px 10px 70px;
+  cursor:pointer;
+  color:white;
+  text-align:left;
+  font-weight:900;
+  letter-spacing:.2px;
+  background:linear-gradient(145deg,#0d6a6d,#08484f 65%,#062f38);
+  box-shadow:
+    0 0 0 3px rgba(255,223,142,.12),
+    0 0 20px rgba(255,212,98,.55),
+    0 8px 20px rgba(31,59,58,.22),
+    inset 0 0 24px rgba(255,255,255,.08);
+  transition:.23s ease;
+  overflow:hidden;
+}
+.navtile:nth-of-type(2){background:linear-gradient(145deg,#4a7e18,#21530e 65%,#173709)}
+.navtile:nth-of-type(3){background:linear-gradient(145deg,#14587c,#0a355a 65%,#072a47)}
+.navtile:nth-of-type(4){background:linear-gradient(145deg,#743a72,#4e224f 65%,#351636)}
+.navtile:before,.navtile:after{
+  content:"";position:absolute;border:2px solid rgba(255,224,142,.55);transform:rotate(45deg);
+  width:28px;height:28px;border-radius:8px;
+}
+.navtile:before{left:-13px;top:25px}.navtile:after{right:-13px;top:25px}
+.navtile .navico{
+  position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  width:42px;height:42px;display:grid;place-items:center;
+  border-radius:14px;font-size:25px;color:#ffe8a6;
+  background:rgba(255,255,255,.06);
+  box-shadow:0 0 18px rgba(255,223,118,.33);
+}
+.navtile .orn{position:absolute;right:14px;top:8px;color:#f6d67c;opacity:.55}
+.navtile span:last-child{display:block;font-size:16px}
+.navtile:hover{
+  transform:translateY(-4px) scale(1.02);
+  box-shadow:
+    0 0 0 3px rgba(255,223,142,.16),
+    0 0 30px rgba(255,212,98,.9),
+    0 12px 30px rgba(31,59,58,.25),
+    inset 0 0 28px rgba(255,255,255,.12);
+}
+
+.hero{
+  margin:16px 0 18px;
+  padding:20px 26px;
+  min-height:100px;
+  border-radius:26px;
+  border:1px solid rgba(221,179,82,.38);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.86),rgba(255,250,237,.72)),
+    radial-gradient(circle at 50% 20%,rgba(255,255,255,.7),transparent 50%);
+  box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+}
+.hero:before{
+  content:"✦  ❖  ✦  ❖  ✦";
+  position:absolute;right:28px;top:22px;
+  font-size:32px;letter-spacing:13px;color:rgba(185,137,33,.15);
+}
+.kicker{color:#9c781d;font-weight:900;text-transform:uppercase;font-size:12px;letter-spacing:1.4px}
+.hero p{margin:8px 0 0;max-width:880px;color:#6d726e;line-height:1.55;font-size:16px}
+.hero h1{display:none}
+.glow{
+  border:1px solid rgba(226,181,72,.55);background:#fff;color:#17313b;border-radius:16px;
+  padding:11px 15px;font-weight:800;cursor:pointer;
+  box-shadow:0 0 22px rgba(226,181,72,.18);transition:.2s;
+}
+.glow:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(226,181,72,.42)}
+.primary{
+  border:1px solid rgba(255,226,142,.7);
+  background:linear-gradient(145deg,#0e6870,#073d52);
+  color:white;
+  box-shadow:0 0 24px rgba(41,159,168,.2),0 0 22px rgba(226,181,72,.15);
+}
+
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 20px
+}
+.stat,.card{
+  background:var(--card);
+  border:1px solid rgba(126,98,43,.18);
+  box-shadow:var(--shadow);
+  border-radius:22px;
+  padding:18px;
+}
+.stat{
+  text-align:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(249,244,232,.92));
+  position:relative;overflow:hidden;
+}
+.stat:after{
+  content:"";position:absolute;inset:auto -20px -25px auto;width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,rgba(226,181,72,.22),transparent 70%);
+}
+.stat .n{font-size:33px;font-weight:950;color:#0b5370}
+.stat .t{color:#5f6766;font-weight:800;margin-top:4px;font-size:13px}
+
+.section{margin:20px 0}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:11px}
+.section h2{
+  margin:0;font-size:22px;color:#2b383a;letter-spacing:.2px;
+  display:flex;align-items:center;gap:10px;
+}
+.section h2:before{content:"❖";color:#a97b1f;font-size:19px}
+.sub{color:#707876;margin-top:4px;font-size:14px}
+
+.values{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.value{
+  position:relative;overflow:hidden;min-height:220px;padding:16px 14px;
+  color:white;text-align:center;
+  border:1px solid rgba(255,225,142,.56);
+  box-shadow:0 0 18px rgba(229,181,74,.24),0 10px 24px rgba(41,54,50,.16);
+}
+.value:nth-child(1){background:linear-gradient(180deg,#145f64,#0b4348)}
+.value:nth-child(2){background:linear-gradient(180deg,#386d1d,#224f13)}
+.value:nth-child(3){background:linear-gradient(180deg,#7b4a18,#59310f)}
+.value:nth-child(4){background:linear-gradient(180deg,#13577b,#0a3c60)}
+.value:nth-child(5){background:linear-gradient(180deg,#6a3265,#4d244b)}
+.value:nth-child(6){background:linear-gradient(180deg,#806715,#59480c)}
+.value .ico{
+  width:66px;height:66px;margin:0 auto 12px;display:grid;place-items:center;
+  font-size:33px;border-radius:18px;color:#ffe9a9;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,225,142,.38);
+  box-shadow:0 0 20px rgba(255,216,107,.25);
+}
+.value h3{margin:7px 0 8px;font-size:14px;line-height:1.25;color:#fff}
+.value ul{padding-left:17px;margin:8px 0 0;text-align:left;color:rgba(255,255,255,.87);line-height:1.38;font-size:12px}
+.value:after{
+  content:"✦";position:absolute;right:12px;top:9px;color:#f6d67c;opacity:.45
+}
+
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.input,select,textarea{
+  background:#fffdf8;border:1px solid rgba(123,98,42,.24);border-radius:13px;
+  padding:10px 12px;font:inherit;min-height:40px;color:#263438;
+}
+.input{flex:1;min-width:220px}
+.table-card{padding:0;overflow:hidden}
+.table-wrap{overflow:auto;max-height:630px}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:1060px}
+thead th{
+  position:sticky;top:0;background:linear-gradient(180deg,#f0e7d1,#e1d3b0);
+  color:#2e3938;text-align:left;padding:12px;font-size:12px;z-index:2;
+  border-bottom:1px solid rgba(118,94,38,.28);
+}
+td{
+  padding:11px 12px;border-bottom:1px solid rgba(121,98,49,.13);
+  vertical-align:top;background:rgba(255,255,255,.80);font-size:13px;
+}
+tr:hover td{background:#fffaf0}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 9px;
+  font-size:11px;font-weight:900;white-space:nowrap;border:1px solid currentColor;
+}
+.dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 10px currentColor}
+.ok{background:rgba(46,139,53,.09);color:#2e8b35}
+.bad{background:rgba(223,67,56,.08);color:#d84739}
+.plan{background:rgba(119,76,151,.08);color:#70498f}
+.score{font-weight:950}
+.meter{height:6px;background:#ece8dd;border-radius:99px;overflow:hidden;margin-top:5px}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#2e8b35,#e4b44f);border-radius:99px}
+
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+.survey .q{padding:13px 0;border-bottom:1px dashed rgba(119,94,43,.25)}
+.survey label{display:block;margin:7px 0;color:#465251}
+.survey textarea{width:100%;min-height:80px;resize:vertical}
+.note{
+  padding:12px 14px;border-left:4px solid var(--gold);
+  background:#fff7dc;border-radius:12px;color:#5b512d;
+}
+.chartbox{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+.donut-card{text-align:center}
+.donut{
+  width:142px;height:142px;border-radius:50%;margin:10px auto;display:grid;place-items:center;
+  position:relative;background:conic-gradient(var(--c) calc(var(--p)*1%),#ece7db 0);
+  box-shadow:inset 0 0 0 1px rgba(100,75,27,.08),0 8px 18px rgba(38,57,56,.12);
+}
+.donut:after{content:"";width:95px;height:95px;background:#fffdf7;border-radius:50%;position:absolute}
+.donut b{position:relative;z-index:1;font-size:25px;color:#173c49}
+.legend{font-size:12px;color:#6c7471}
+.bar-area{height:250px;display:flex;align-items:end;gap:9px;padding:24px 8px 8px;border-bottom:1px solid rgba(123,98,42,.22)}
+.bar{
+  flex:1;min-width:17px;border-radius:10px 10px 3px 3px;
+  background:linear-gradient(180deg,#17a5b0,#0b5f79);
+  position:relative;box-shadow:0 0 16px rgba(23,165,176,.18);
+}
+.bar span{position:absolute;top:-23px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:900}
+.bar small{position:absolute;bottom:-23px;left:50%;transform:translateX(-50%);font-size:9px;color:#747c79}
+
+.modal{position:fixed;inset:0;background:rgba(13,36,39,.45);display:none;align-items:center;justify-content:center;z-index:99;padding:20px}
+.modal.show{display:flex}
+.modal-card{
+  max-width:650px;width:100%;max-height:88vh;overflow:auto;
+  background:#fffdf6;border-radius:24px;padding:24px;
+  border:1px solid rgba(226,181,72,.35);
+  box-shadow:0 30px 90px rgba(0,0,0,.22);
+}
+.x{float:right;border:0;background:#f1eee4;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px}
+footer{text-align:center;color:#6d726c;padding:25px 0 35px;font-size:12px}
+
+@media(max-width:1180px){
+  .values{grid-template-columns:repeat(3,1fr)}
+  .navtile{min-width:160px}
+}
+@media(max-width:900px){
+  .stats,.grid2,.chartbox{grid-template-columns:1fr 1fr}
+  .nav{gap:10px}.navtile{min-width:145px;min-height:68px;padding-left:58px}
+  .navtile .navico{left:12px}
+}
+@media(max-width:650px){
+  .wrap{padding:12px 12px 55px}
+  .stats,.values,.grid2,.chartbox{grid-template-columns:1fr}
+  .nav{padding:10px 12px}.brand{width:100%;margin-bottom:4px}
+  .navtile{width:calc(50% - 6px);min-width:0}
+  .hero{padding:18px}
+}
+</style>
+</head>
+<body><div class="kazakh-corner tl"></div><div class="kazakh-corner tr"></div>
+<header><div class="nav">
+  <div class="brand"><div class="brand-badge">☀</div><div><div>АДАЛ АЗАМАТ</div><div style="font-size:12px;color:#6b7471;font-weight:700;margin-top:2px">Біртұтас тәрбие бағдарламасы</div></div></div>
+  <button class="navtile" onclick="go('monitor')"><span class="orn">❖</span><span class="navico">📊</span><span>Мониторинг</span></button>
+  <button class="navtile" onclick="go('survey')"><span class="orn">✦</span><span class="navico">📝</span><span>Сауалнама</span></button>
+  <button class="navtile" onclick="go('analytics')"><span class="orn">◈</span><span class="navico">📈</span><span>Динамика</span></button>
+  <button class="navtile" onclick="go('values')"><span class="orn">✥</span><span class="navico">🏛️</span><span>Өлшемшарттары</span></button>
+</div></header>
+
+<main class="wrap"><section class="hero">
+  <div class="kicker">Тәрбие жұмысының цифрлық бақылау панелі</div>
+  <h1></h1>
+  <p>Іс-шаралардың орындалуын, қатысуын, бағасын, сауалнама нәтижесін және өлшемшарттарды бір интерфейсте көрсететін интерактивті жүйе.</p>
+  <button class="glow primary" onclick="go('monitor')">Мониторингті ашу →</button>
+</section>
+
+<div class="stats">
+ <div class="stat"><div class="n" id="sEvents">29</div><div class="t">Барлық іс-шара</div></div>
+ <div class="stat"><div class="n" id="sPart">80%</div><div class="t">Орташа қатысу</div></div>
+ <div class="stat"><div class="n" id="sScore">3.8</div><div class="t">Орташа баға</div></div>
+ <div class="stat"><div class="n" id="sFeedback">0</div><div class="t">Сауалнама жауабы</div></div>
+</div>
+
+<section id="monitor" class="section">
+ <div class="section-head"><div><h2>Айлық іс-шара мониторингі</h2><div class="sub">Мәртебе индикаторы: жасыл — өтті, қызыл — өтпеді, күлгін — жоспарда</div></div></div>
+ <div class="toolbar">
+   <input id="search" class="input" placeholder="Іс-шараны іздеу..." oninput="renderTable()">
+   <select id="filter" onchange="renderTable()"><option value="all">Барлығы</option><option value="done">Өтті</option><option value="missed">Өтпеді</option><option value="planned">Жоспарда</option></select>
+   <button class="glow" onclick="autoStatus()">Авто-мәртебе</button>
+   <button class="glow" onclick="resetData()">Қалпына келтіру</button>
+ </div>
+ <div class="card table-card"><div class="table-wrap">
+  <table><thead><tr><th>№</th><th>Іс-шара атауы</th><th>Формат</th><th>Қатысу</th><th>Қызығушылық</th><th>Баға</th><th>Мәртебе</th><th>Әрекет</th></tr></thead><tbody id="tbody"></tbody></table>
+ </div></div>
+</section><section id="analytics" class="section">
+ <div class="section-head"><div><h2>Нәтиже динамикасы</h2><div class="sub">Сынып сатылары мен соңғы сауалнама жауаптарының жиынтық көрінісі</div></div></div>
+ <div class="chartbox">
+  <div class="card donut-card"><h3>1–4 сынып</h3><div class="donut" style="--p:92;--c:#16b86a"><b>92%</b></div><div class="legend">Жоғары деңгей • 8% орташа/өзге</div></div>
+  <div class="card donut-card"><h3>5–7 сынып</h3><div class="donut" style="--p:96;--c:#ffd100"><b>96%</b></div><div class="legend">Жоғары деңгей • 4% орташа/өзге</div></div>
+  <div class="card donut-card"><h3>8–11 сынып</h3><div class="donut" style="--p:98;--c:#11aee5"><b>98%</b></div><div class="legend">Жоғары деңгей • 2% орташа/өзге</div></div>
+ </div>
+ <div class="card" style="margin-top:16px"><h3>Іс-шаралар бойынша қатысу динамикасы</h3><div class="bar-area" id="bars"></div><div style="height:24px"></div></div>
+ <div class="card" style="margin-top:16px"><h3>Сауалнама нәтижесі</h3><div id="surveyAnalytics" class="sub">Әзірге жауап жоқ.</div></div>
+</section><section id="values" class="section">
+ <div class="section-head"><div><h2>«Адал азамат» бағдарламасының өлшемшарттары</h2><div class="sub">Оқушы осы бағыттар аясында нені меңгеруі керек және қандай құндылықтық дағдылар қалыптасуы тиіс</div></div></div>
+ <div class="values" id="valuesGrid"></div>
+</section><section id="survey" class="section">
+ <div class="section-head"><div><h2>Оқушы сауалнамасы</h2><div class="sub">Таңдалған іс-шара бойынша пікір қалдырады; нәтиже бірден динамикаға қосылады</div></div></div>
+ <div class="grid2">
+  <div class="card survey">
+   <label><b>Іс-шараны таңдаңыз</b></label>
+   <select id="eventSelect" style="width:100%"></select>
+   <div class="q"><b>1. Саған іс-шара қызықты болды ма?</b>
+    <label><input type="radio" name="interest" value="5"> Иә, өте қызықты</label>
+    <label><input type="radio" name="interest" value="3"> Орташа</label>
+    <label><input type="radio" name="interest" value="1"> Жоқ</label>
+   </div>
+   <div class="q"><b>2. Іс-шараның негізгі идеясын түсіндім</b>
+    <label><input type="radio" name="understand" value="5"> Толық түсіндім</label>
+    <label><input type="radio" name="understand" value="3"> Ішінара</label>
+    <label><input type="radio" name="understand" value="1"> Қиын болды</label>
+   </div>
+   <div class="q"><b>3. Бұл іс-шара отаншылдық/азаматтық жауапкершілігіме әсер етті</b>
+    <label><input type="radio" name="impact" value="5"> Иә</label>
+    <label><input type="radio" name="impact" value="3"> Аздап</label>
+    <label><input type="radio" name="impact" value="1"> Жоқ</label>
+   </div>
+   <div class="q"><b>4. Не ұнады?</b><textarea id="liked" class="input" placeholder="Қысқаша пікір..."></textarea></div>
+   <div class="q"><b>5. Не өзгертер едің?</b><textarea id="change" class="input" placeholder="Ұсынысың..."></textarea></div>
+   <button class="glow primary" onclick="submitSurvey()">Жауапты жіберу</button>
+  </div>
+  <div class="card">
+    <h3>Сауалнама қалай есептеледі?</h3>
+    <p class="sub">3 жабық сұрақтың орташа балы 5 балдық шкалаға айналады. Нәтиже браузердің жергілікті жадында сақталады және аналитика автоматты жаңарады.</p>
+    <div class="note">Жүйе оқушының аты-жөнін сұрамайды. Бұл нұсқа анонимді кері байланысқа бейімделген.</div>
+    <div id="lastFeedback" style="margin-top:18px"></div>
+  </div>
+ </div>
+</section></main>
+
+<div id="modal" class="modal"><div class="modal-card"><button class="x" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
+<footer>ADAL AZAMAT SMART MONITOR • деректер осы браузерде сақталады</footer>
+
+<script>
+const VALUES = [
+ {n:"Тәуелсіздік және отаншылдық",i:"🇰🇿",g:"#16b86a",m:["Қазақстанның тәуелсіздігі мен мемлекеттік рәміздерін құрметтеу","Ел тарихы, мәдениеті мен ұлттық мұраға жауапкершілікпен қарау","Отанға пайдалы болуға, қоғамдық іске үлес қосуға ұмтылу"]},
+ {n:"Бірлік және ынтымақ",i:"🤝",g:"#11c5e8",m:["Өзгелерді құрметтеу, тыңдай білу және диалог құру","Ортақ мақсат үшін топпен әрекет ету","Қоғамдағы татулық пен өзара көмекті қолдау"]},
+ {n:"Әділдік және жауапкершілік",i:"⚖️",g:"#8a5cff",m:["Шешімде әділ болу және өз әрекетінің салдарын түсіну","Міндетті уақытында әрі адал орындау","Қателікті мойындап, түзетуге дайын болу"]},
+ {n:"Заң және тәртіп",i:"🛡️",g:"#2962ff",m:["Құқық пен міндетті білу және ережені сақтау","Қауіпсіз әрі жауапты мінез-құлық таныту","Құқық бұзушылыққа немқұрайлы қарамау"]},
+ {n:"Еңбекқорлық және кәсіби біліктілік",i:"🧠",g:"#ff9d2e",m:["Еңбекті қадірлеу, мақсат қоя білу және нәтижеге ұмтылу","Білім мен дағдыны үнемі жетілдіру","Сапалы жұмыс пен кәсіби жауапкершілікті бағалау"]},
+ {n:"Жасампаздық және жаңашылдық",i:"✨",g:"#ff4d9d",m:["Жаңа идея ұсыну және мәселені шығармашылықпен шешу","Цифрлық құралдарды пайдалы әрі қауіпсіз қолдану","Бастама көтеріп, қоғамға пайдалы өнім/жоба жасау"]}
+];
+const baseEvents = [
+["«АДАЛ АЗАМАТ» біртұтас тәрбие бағдарламасы аясында «Тәуелсіздік және отаншылдық»","Айлықтың ашылуы",70,"Жоғары",4.5],
+["«Алғыс – ізгі ниет»","1–4 сынып сынып сағаты",100,"Жоғары",4.5],
+["«Алғыс – асыл қасиет»","5–8 сынып сынып сағаты",97,"Орташа",3.5],
+["«Алғыстың күші: қолыңда барды не үшін қадірлеу қажет?»","9–11 сынып сынып сағаты",94.5,"Орташа",3.5],
+["«Алғыс – жүректен шыққан жылы сөз»","Мерекелік концерт",100,"Орташа",4.5],
+["«Рақмет айту – жүрек жылуы»","Плакат байқауы",50,"Жоғары",4.5],
+["«Нәзіктік пен мейірім мерекесі»","Мерекелік концерт",82,"Орташа",3.5],
+["«Қыз сыны» байқауы","8–9 сынып байқауы",100,"Жоғары",4.5],
+["«Жақсылық жаса» акциясы — көмекке мұқтаж отбасыларға қолдау","1–11 сынып акциясы",100,"Жоғары",5],
+["«Қоғамдық мүлік деген не?»","1–4 сынып сынып сағаты",100,"Жоғары",4.5],
+["«Мұқият бол – ортақ дүниеге!»","5–8 сынып сынып сағаты",92,"Орташа",3.5],
+["«Қоғамдық мүлікті құрметтеу – мәдениеттіліктің белгісі»","9–11 сынып сынып сағаты",92.5,"Орташа",3.5],
+["«Шабыт» жобасы аясында «Ананың аялы алақаны» челленджі","1–11 сынып",75,"Жоғары",4.5],
+["«Даналық мектебі» жобасы аясында «Әже тәрбиесі – ұрпаққа аманат» байқауы","4 сынып",70,"Орташа",3.5],
+["«Жүректен шыққан алғыс»","7 сыныптар • театрландырылған қойылым",100,"Жоғары",4.5],
+["14 наурыз – Көрісу күні (Амал мерекесі)","8–11 сынып",50,"Орташа",3.5],
+["Д. Исабековтің «Сүйекші» повесін талдау","8 сынып • кітап талдау",50,"Орташа",3.5],
+["«Наурыз – ұлттық жаңғыру мейрамы»","1–4 сынып сынып сағаты",92.5,"Жоғары",4.5],
+["«Көктемнің келуі мен жаңаруы»","5–8 сынып сынып сағаты",89.2,"Орташа",3.5],
+["«Наурыз: дәстүр мен жаңарудың үндесуі»","9–11 сынып сынып сағаты",85,"Орташа",3.5],
+["«Шабыт» жобасы аясында қазақтың ұлттық әндерінен «Екі жұлдыз»","Байқау",100,"Жоғары",4.5],
+["«Ұлттық мәдениет» көрмесі","Көрме",75,"Орташа",3.5],
+["16 наурыз – Мәдениет және ұлттық салт-дәстүр күні","Көрініс",50,"Орташа",3.5],
+["17 наурыз – Шаңырақ күні «Отбасы – бақыт мекені»","Байқау",50,"Жоғары",4.5],
+["18 наурыз – Ұлттық киім күні «Ұлттық стиль» челленджі","Челлендж",100,"Жоғары",4.5],
+["19 наурыз – Жаңару күні: мектеп ауласын тазалау, ағаш отырғызу","Экологиялық акция",75,"Орташа",3.5],
+["20 наурыз – Ұлттық спорт күні: «Ұлттық ойындар – ұрпаққа аманат»","Ұлттық ойыннан жарыс",50,"Орташа",3.5],
+["«Қамқор» жобасы аясында «Жер сағаты» экологиялық акциясы","Экологиялық акция",100,"Жоғары",4.5],
+["Көктемгі каникул: қауіпсіздік, кітап оқу, Luminarity speaking club, «Өнегелі 15 минут», отбасылық демалыс","Кешенді каникул жоспары",75,"Жоғары",4.0]
+].map((x,i)=>({id:i+1,title:x[0],format:x[1],part:x[2],interest:x[3],score:x[4],status:"done"}));
+
+let events = JSON.parse(localStorage.getItem("adal_events")||"null") || baseEvents;
+let feedback = JSON.parse(localStorage.getItem("adal_feedback")||"[]");
+
+function save(){localStorage.setItem("adal_events",JSON.stringify(events));localStorage.setItem("adal_feedback",JSON.stringify(feedback))}
+function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"})}
+function renderValues(){document.getElementById("valuesGrid").innerHTML=VALUES.map(v=>`<div class="card value" style="--gl:${v.g}"><div class="ico">${v.i}</div><h3>${v.n}</h3><ul>${v.m.map(m=>`<li>${m}</li>`).join("")}</ul></div>`).join("")}
+function statusHTML(s){return s==="done"?`<span class="pill ok"><i class="dot"></i>Өтті</span>`:s==="missed"?`<span class="pill bad"><i class="dot"></i>Өтпеді</span>`:`<span class="pill plan"><i class="dot"></i>Жоспарда</span>`}
+function renderTable(){
+ const q=document.getElementById("search").value.toLowerCase(), f=document.getElementById("filter").value;
+ const rows=events.filter(e=>(f==="all"||e.status===f)&&e.title.toLowerCase().includes(q));
+ document.getElementById("tbody").innerHTML=rows.map(e=>`<tr>
+ <td><b>${e.id}</b></td><td>${e.title}</td><td>${e.format}</td>
+ <td><span class="score">${e.part}%</span><div class="meter"><i style="width:${e.part}%"></i></div></td>
+ <td>${e.interest}</td><td><span class="score">${e.score.toFixed(1)}</span></td><td>${statusHTML(e.status)}</td>
+ <td><select onchange="setStatus(${e.id},this.value)"><option value="done" ${e.status==="done"?"selected":""}>Өтті</option><option value="missed" ${e.status==="missed"?"selected":""}>Өтпеді</option><option value="planned" ${e.status==="planned"?"selected":""}>Жоспарда</option></select></td></tr>`).join("");
+ updateStats(); renderBars(); fillSelect(); renderFeedback();
+}
+function setStatus(id,v){events.find(e=>e.id===id).status=v;save();renderTable()}
+function autoStatus(){events.forEach(e=>e.status=e.part>=70?"done":"missed");save();renderTable();toast("Авто-мәртебе жаңартылды: қатысу ≥70% — өтті")}
+function resetData(){if(confirm("Жергілікті өзгерістерді өшіріп, бастапқы деректерді қалпына келтірейін бе?")){events=JSON.parse(JSON.stringify(baseEvents));feedback=[];save();renderTable()}}
+function updateStats(){
+ const avg=a=>a.reduce((s,x)=>s+x,0)/a.length;
+ document.getElementById("sEvents").textContent=events.length;
+ document.getElementById("sPart").textContent=avg(events.map(e=>e.part)).toFixed(0)+"%";
+ document.getElementById("sScore").textContent=avg(events.map(e=>e.score)).toFixed(1);
+ document.getElementById("sFeedback").textContent=feedback.length;
+}
+function fillSelect(){const s=document.getElementById("eventSelect");const cur=s.value;s.innerHTML=events.map(e=>`<option value="${e.id}">${e.id}. ${e.title}</option>`).join("");if(cur)s.value=cur}
+function renderBars(){
+ const top=events.slice(0,12);document.getElementById("bars").innerHTML=top.map(e=>`<div class="bar" style="height:${Math.max(18,e.part*2)}px" title="${e.title}: ${e.part}%"><span>${e.part}%</span><small>${e.id}</small></div>`).join("")
+}
+function submitSurvey(){
+ const gi=n=>document.querySelector(`input[name="${n}"]:checked`);
+ const a=gi("interest"),b=gi("understand"),c=gi("impact"); if(!a||!b||!c){toast("3 бағалау сұрағына да жауап беріңіз");return}
+ const item={id:Date.now(),eventId:+document.getElementById("eventSelect").value,interest:+a.value,understand:+b.value,impact:+c.value,liked:document.getElementById("liked").value.trim(),change:document.getElementById("change").value.trim(),date:new Date().toLocaleString("kk-KZ")};
+ feedback.push(item);save();document.querySelectorAll('.survey input[type=radio]').forEach(x=>x.checked=false);document.getElementById("liked").value="";document.getElementById("change").value="";
+ renderFeedback();updateStats();toast("Рақмет! Жауабыңыз динамикаға қосылды");go("analytics")
+}
+function renderFeedback(){
+ const box=document.getElementById("surveyAnalytics"), last=document.getElementById("lastFeedback");
+ if(!feedback.length){box.innerHTML="Әзірге жауап жоқ.";last.innerHTML="";return}
+ const avg=k=>(feedback.reduce((s,x)=>s+x[k],0)/feedback.length).toFixed(1);
+ const overall=((+avg("interest") + +avg("understand") + +avg("impact"))/3).toFixed(1);
+ box.innerHTML=`<div class="stats" style="grid-template-columns:repeat(4,1fr);margin:0"><div class="stat"><div class="n">${feedback.length}</div><div class="t">Жауап</div></div><div class="stat"><div class="n">${avg("interest")}</div><div class="t">Қызығушылық</div></div><div class="stat"><div class="n">${avg("understand")}</div><div class="t">Түсіну</div></div><div class="stat"><div class="n">${overall}</div><div class="t">Жалпы индекс</div></div></div>`;
+ const l=feedback[feedback.length-1], ev=events.find(e=>e.id===l.eventId); last.innerHTML=`<h4>Соңғы жауап</h4><div class="note"><b>${ev?.title||""}</b><br>Қызығушылық: ${l.interest}/5 • Түсіну: ${l.understand}/5 • Әсері: ${l.impact}/5</div>`
+}
+function toast(msg){document.getElementById("modalBody").innerHTML=`<h3>${msg}</h3><p class="sub">Дерек автоматты түрде сақталды.</p>`;document.getElementById("modal").classList.add("show");setTimeout(closeModal,1400)}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+renderValues();renderTable();
+</script>
+</body>
+</html>

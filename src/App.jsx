@@ -4,6 +4,8 @@ import { Dashboard } from './pages/Dashboard';
 import { Wizard } from './pages/Wizard';
 import { ResultPage } from './pages/ResultPage';
 import { DeputyDashboard } from './pages/DeputyDashboard';
+import { DeputyBriefcase } from './pages/DeputyBriefcase';
+import { Mood } from './pages/Mood';
 import { planStorage } from './utils/planStorage';
 import { Neon3DBackground } from './components/ui/Neon3DBackground';
 
@@ -86,6 +88,14 @@ function App() {
 
       {currentRoute === 'dashboard' && appMode === 'deputy' && (
         <DeputyDashboard onSwitchRole={(role) => setAppMode(role)} />
+      )}
+
+      {currentRoute === 'dashboard' && appMode === 'deputy_briefcase' && (
+        <DeputyBriefcase onSwitchRole={(role) => setAppMode(role)} />
+      )}
+
+      {currentRoute === 'dashboard' && appMode === 'mood' && (
+        <Mood onSwitchRole={(role) => setAppMode(role)} />
       )}
       
       {currentRoute === 'wizard' && (
